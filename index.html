@@ -1,0 +1,1469 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+<title>胡嘉磊 · 保持谦虚，保持思考</title>
+<meta name="description" content="胡嘉磊 - 江西理工大学本科生，数学之美的痴迷者，AI应用的探索者。">
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        fontFamily: {
+          sans: ['"Plus Jakarta Sans"', '-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', '"PingFang SC"', '"Hiragino Sans GB"', '"Microsoft YaHei"', 'sans-serif'],
+          mono: ['"JetBrains Mono"', '"Fira Code"', 'Consolas', 'monospace'],
+        },
+        colors: {
+          ink: '#e8edf5',
+        }
+      }
+    }
+  }
+</script>
+<style>
+  /* ===== 基础 ===== */
+  html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+  body { -webkit-font-smoothing: antialiased; position: relative; }
+  ::selection { background: #06b6d4; color: #04121a; }
+  a { color: inherit; text-decoration: none; }
+  button { font-family: inherit; }
+  img { max-width: 100%; display: block; }
+
+  /* ===== Canvas 背景 ===== */
+  #geo-bg {
+    position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+    z-index: -1; pointer-events: none; display: block;
+  }
+
+  /* ===== 磁力光标 ===== */
+  .cursor-dot, .cursor-ring {
+    position: fixed; top: 0; left: 0; pointer-events: none; z-index: 10000;
+    border-radius: 50%; transform: translate(-50%, -50%);
+    mix-blend-mode: difference;
+  }
+  .cursor-dot { width: 6px; height: 6px; background: #fff; transition: width 200ms, height 200ms; }
+  .cursor-ring {
+    width: 34px; height: 34px; border: 1.5px solid #fff;
+    transition: width 250ms, height 250ms, border-color 250ms, transform 80ms linear;
+  }
+  .cursor-ring.hovering { width: 56px; height: 56px; border-color: #22d3ee; }
+  .cursor-dot.hovering { width: 0; height: 0; }
+  @media (hover: none), (max-width: 768px) {
+    body { cursor: auto; }
+    .cursor-dot, .cursor-ring { display: none; }
+  }
+  @media (hover: hover) and (min-width: 769px) {
+    body { cursor: none; }
+    a, button { cursor: none; }
+  }
+
+  /* ===== 淡入动画 ===== */
+  .reveal { opacity: 0; transform: translateY(28px); transition: opacity 800ms cubic-bezier(0.16,1,0.3,1), transform 800ms cubic-bezier(0.16,1,0.3,1); }
+  .reveal.in { opacity: 1; transform: translateY(0); }
+  .lazy-img { opacity: 0; transition: opacity 600ms ease; }
+  .lazy-img.loaded { opacity: 1; }
+
+  /* ===== 亮点战绩渐变数字 ===== */
+  .gradient-num {
+    background: linear-gradient(135deg, #67e8f9 0%, #22d3ee 40%, #6366f1 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* ===== 成果行：鼠标跟随渐变 ===== */
+  .work-row { --mx: 50%; --my: 50%; isolation: isolate; }
+  .work-row::before {
+    content: ""; position: absolute; inset: 0;
+    background: radial-gradient(
+      circle 0px at var(--mx) var(--my),
+      rgba(34,211,238,0.32) 0%,
+      rgba(99,102,241,0.18) 25%,
+      rgba(2,6,23,0.95) 60%,
+      transparent 100%
+    );
+    opacity: 0; transform: scale(0); transform-origin: var(--mx) var(--my);
+    transition: opacity 0.3s ease, transform 0.5s cubic-bezier(0.16,1,0.3,1);
+    pointer-events: none; z-index: 0;
+  }
+  .work-row:hover::before { opacity: 1; transform: scale(30); }
+  .work-row > * { position: relative; z-index: 1; }
+  .work-num-outline {
+    -webkit-text-stroke: 1.5px rgba(255,255,255,0.45);
+    -webkit-text-fill-color: transparent;
+    transition: all 0.4s ease;
+  }
+  .work-row:hover .work-num-outline {
+    -webkit-text-fill-color: rgba(255,255,255,0.92);
+    -webkit-text-stroke-color: rgba(34,211,238,0.6);
+    text-shadow: 0 0 30px rgba(34,211,238,0.5);
+  }
+  .work-row:hover .work-title-en { color: #fff; text-shadow: 0 0 20px rgba(34,211,238,0.6); }
+  .work-row:hover .work-title-zh { color: rgba(255,255,255,0.8); }
+  .work-row-image {
+    position: absolute; pointer-events: none; opacity: 0;
+    transform: translate(-50%, -50%) rotate(-15deg) scale(0.5);
+    transition: opacity 0.4s ease, transform 0.9s cubic-bezier(0.16,1,0.3,1);
+    z-index: 2; border-radius: 14px; overflow: hidden;
+    box-shadow: 0 20px 60px -10px rgba(0,0,0,0.7), 0 0 40px rgba(34,211,238,0.3);
+  }
+  .work-row-image img { width: 100%; height: auto; border-radius: 14px; }
+  .work-row:hover .work-row-image { opacity: 1; transform: translate(-50%, -50%) rotate(-10deg) scale(1); }
+
+  /* ===== 手机端适配 ===== */
+  @media (hover: none), (max-width: 768px) {
+    /* 成果：弹出图片固定在卡片中央，点击切换显示 */
+    .work-row .work-row-image {
+      left: 50% !important; top: 50% !important;
+      width: 150px; height: 90px;
+      transform: translate(-50%, -50%) rotate(-5deg) scale(1);
+      opacity: 0;
+      transition: opacity .35s ease, transform .45s cubic-bezier(0.16,1,0.3,1);
+    }
+    .work-row .work-row-image img { width: 100%; height: 100%; object-fit: cover; }
+    .work-row.active .work-row-image {
+      opacity: 1 !important;
+      transform: translate(-50%, -50%) rotate(-5deg) scale(1) !important;
+    }
+    /* 关闭桌面端鼠标跟随渐变与 hover 弹图，避免手机端误闪 */
+    .work-row:hover::before { opacity: 0; transform: scale(0); }
+    .work-row:hover .work-row-image { opacity: 0; }
+    /* 覆盖页关闭按钮 / 返回顶部 适配安全区 */
+    .works-overlay-close { top: max(16px, env(safe-area-inset-top)); right: max(16px, env(safe-area-inset-right)); width: 44px; height: 44px; }
+    .to-top { bottom: max(16px, env(safe-area-inset-bottom)); right: max(16px, env(safe-area-inset-right)); }
+  }
+  /* 超窄屏：联系卡堆叠，提升可读性 */
+  @media (max-width: 380px) {
+    .contact-card { grid-template-columns: 1fr !important; gap: 0.6rem !important; }
+    .contact-col { border-left-width: 0 !important; padding-left: 0 !important; padding-top: 0.6rem; border-top: 1px solid rgba(255,255,255,0.10); }
+    .contact-col:first-child { border-top: 0; padding-top: 0; }
+  }
+
+  /* ===== 成果覆盖页 ===== */
+  .works-overlay {
+    position: fixed; inset: 0; z-index: 9999;
+    background: url('编程.jpg') center center / cover no-repeat, #020617;
+    opacity: 0; pointer-events: none; transition: opacity 0.6s ease; overflow: hidden;
+  }
+  .works-overlay::after {
+    content: ""; position: absolute; inset: 0;
+    background: linear-gradient(180deg, rgba(2,6,23,0.3) 0%, rgba(2,6,23,0.1) 50%, rgba(2,6,23,0.4) 100%);
+    pointer-events: none;
+  }
+  .works-overlay.active { opacity: 1; pointer-events: auto; }
+  .works-overlay-close {
+    position: absolute; top: 32px; right: 32px;
+    width: 52px; height: 52px;
+    border: 1.5px solid rgba(255,255,255,0.25);
+    border-radius: 50%;
+    background: rgba(2,6,23,0.4);
+    backdrop-filter: blur(20px) saturate(1.4);
+    -webkit-backdrop-filter: blur(20px) saturate(1.4);
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    z-index: 10; overflow: hidden;
+    color: rgba(255,255,255,0.75);
+    transition: all 0.4s cubic-bezier(0.16,1,0.3,1);
+  }
+  .works-overlay-close::before {
+    content: ""; position: absolute; inset: -2px;
+    border-radius: 50%;
+    background: conic-gradient(from 0deg, transparent 0deg, rgba(34,211,238,0.6) 60deg, transparent 120deg, transparent 240deg, rgba(168,85,247,0.5) 300deg, transparent 360deg);
+    opacity: 0; transition: opacity 0.5s ease; z-index: -1;
+  }
+  @keyframes closeRing { to { transform: rotate(360deg); } }
+  .works-overlay-close::after {
+    content: ""; position: absolute; inset: 3px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.08), rgba(2,6,23,0.6) 100%);
+    z-index: 0;
+  }
+  .works-overlay-close:hover {
+    border-color: transparent; color: #fff;
+    transform: rotate(90deg) scale(1.1);
+    box-shadow: 0 0 24px rgba(34,211,238,0.5), 0 0 48px rgba(168,85,247,0.3), inset 0 0 16px rgba(34,211,238,0.2);
+  }
+  .works-overlay-close:hover::before { opacity: 1; animation: closeRing 2s linear infinite; }
+  .works-overlay-close svg {
+    width: 20px; height: 20px; position: relative; z-index: 1;
+    transition: transform 0.3s ease, stroke 0.3s ease;
+  }
+  .works-overlay-close:hover svg { transform: scale(1.15); stroke: #00e5ff; }
+  .works-overlay-title {
+    font-size: clamp(80px, 18vw, 220px);
+    font-weight: 800; line-height: 1; letter-spacing: -0.04em;
+    /* ShinyText：品牌青蓝（color=#0891b2, shineColor=#00e5ff, spread=120°）+ 扫光（speed=3s, direction=left, 非 yoyo, delay=0） */
+    background-image: linear-gradient(120deg, #0891b2 0%, #0891b2 35%, #00e5ff 50%, #0891b2 65%, #0891b2 100%);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+    filter: drop-shadow(0 0 26px rgba(0,229,255,0.28));
+    opacity: 0; transform: translateY(20px);
+    transition: opacity 1.2s ease 0.3s, transform 1.2s ease 0.3s;
+  }
+  .works-overlay.active .works-overlay-title { opacity: 1; transform: translateY(0); animation: shiny-sweep 3s linear infinite; }
+  @keyframes shiny-sweep {
+    0% { background-position: 150% center; }
+    100% { background-position: -50% center; }
+  }
+  .works-overlay-subtitle {
+    font-size: clamp(14px, 2vw, 22px); letter-spacing: 0.2em;
+    color: rgba(255,255,255,0.6); margin-top: 32px;
+    opacity: 0; transition: opacity 1s ease 1.2s;
+  }
+  .works-overlay.active .works-overlay-subtitle { opacity: 1; }
+  .works-overlay-line {
+    width: 0; height: 1px;
+    background: linear-gradient(90deg, transparent, #00e5ff, transparent);
+    margin-top: 24px; transition: width 1s ease 0.9s;
+  }
+  .works-overlay.active .works-overlay-line { width: clamp(120px, 30vw, 360px); }
+
+  /* ===== 专业认证：图集覆盖页（ImageTrail 鼠标轨迹） ===== */
+  .cert-cam-btn {
+    margin-left: auto; flex-shrink: 0;
+    width: 46px; height: 46px; border-radius: 50%;
+    display: inline-flex; align-items: center; justify-content: center;
+    background: rgba(2,6,23,0.55); border: 1px solid rgba(255,255,255,0.20);
+    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    color: rgba(255,255,255,0.85); cursor: pointer;
+    transition: color .3s ease, border-color .3s ease, box-shadow .3s ease, transform .3s cubic-bezier(0.16,1,0.3,1);
+  }
+  .cert-cam-btn svg { width: 28px; height: 28px; }
+  .cert-cam-btn:hover { color: #00e5ff; border-color: rgba(0,229,255,0.6); box-shadow: 0 0 22px rgba(0,229,255,0.5); transform: scale(1.08) rotate(-4deg); }
+  .cert-trail-overlay {
+    position: fixed; inset: 0; z-index: 100; overflow: hidden;
+    background: radial-gradient(circle at 50% 40%, #0a1024 0%, #020319 100%);
+    opacity: 0; pointer-events: none; transition: opacity .5s ease;
+  }
+  .cert-trail-overlay.active { opacity: 1; pointer-events: auto; }
+  .cert-trail-content { position: absolute; inset: 0; z-index: 1; }
+  .cert-trail-content .content__img {
+    position: absolute; top: 0; left: 0; width: 180px; height: 130px;
+    opacity: 0; pointer-events: none; will-change: transform, opacity;
+  }
+  .cert-trail-content .content__img-inner {
+    width: 100%; height: 100%; background-size: cover; background-position: center;
+    border-radius: 10px; border: 1px solid rgba(255,255,255,0.15);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.5); will-change: transform;
+  }
+  .cert-trail-close {
+    position: absolute; top: max(16px, env(safe-area-inset-top)); right: max(16px, env(safe-area-inset-right)); z-index: 9999;
+    width: 44px; height: 44px; border-radius: 50%;
+    background: rgba(2,6,23,0.5); border: 1px solid rgba(255,255,255,0.25);
+    backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+    color: rgba(255,255,255,0.8); cursor: pointer; display: flex; align-items: center; justify-content: center;
+    transition: color .35s cubic-bezier(0.16,1,0.3,1), border-color .35s, box-shadow .35s, transform .35s cubic-bezier(0.16,1,0.3,1);
+  }
+  .cert-trail-close svg { width: 20px; height: 20px; }
+  .cert-trail-close:hover { color: #00e5ff; border-color: rgba(0,229,255,0.6); box-shadow: 0 0 24px rgba(0,229,255,0.5); transform: rotate(90deg) scale(1.08); }
+  .cert-trail-hint {
+    position: absolute; bottom: max(20px, env(safe-area-inset-bottom)); left: 0; right: 0; z-index: 2;
+    text-align: center; color: rgba(255,255,255,0.45); font-size: 12px; letter-spacing: 0.18em; pointer-events: none;
+  }
+
+  /* ===== StarBorder：彗星光束沿边框循环流动（@property --angle 驱动锥形渐变 + 蒙版镂空仅显边框，主题青蓝） ===== */
+  @property --star-angle { syntax: '<angle>'; initial-value: 0deg; inherits: false; }
+  .star-border-container {
+    position: relative; display: block; width: 100%;
+    border-radius: 1rem; padding: 1.5px;
+  }
+  .star-border-container::before {
+    content: ""; position: absolute; inset: 0; border-radius: inherit;
+    pointer-events: none; z-index: 0;
+    /* 彗星：亮白头部 + 青色拖尾，沿周向连续流动 */
+    background: conic-gradient(from var(--star-angle),
+      rgba(0,229,255,0) 0deg,
+      rgba(0,229,255,0) 282deg,
+      rgba(0,229,255,0.30) 322deg,
+      rgba(0,229,255,0.75) 346deg,
+      #00e5ff 354deg,
+      #ffffff 359deg,
+      rgba(0,229,255,0) 360deg);
+    padding: 1.5px;
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+            mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+            mask-composite: exclude;
+    animation: star-angle-spin 9s linear infinite;
+  }
+  .star-border-container .inner-content { position: relative; z-index: 1; border-radius: calc(1rem - 1px); }
+  @keyframes star-angle-spin { to { --star-angle: 360deg; } }
+  /* 降级：不支持蒙版时用静态细边框 */
+  @supports not ((mask-composite: exclude) or (-webkit-mask-composite: xor)) {
+    .star-border-container { border: 1px solid rgba(0,229,255,0.25); padding: 0; }
+    .star-border-container::before { display: none; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .star-border-container::before { animation: none; }
+  }
+
+  /* ===== 认证滑动轨道 ===== */
+  .cert-marquee-track { display: flex; will-change: transform; }
+  .cert-marquee-row { position: relative; width: 100%; overflow: hidden; }
+  .cert-marquee-row::before, .cert-marquee-row::after {
+    content: ""; position: absolute; top: 0; bottom: 0; width: 60px;
+    pointer-events: none; z-index: 2;
+  }
+  .cert-marquee-row::before { left: 0; background: linear-gradient(90deg, #030712 0%, transparent 100%); }
+  .cert-marquee-row::after { right: 0; background: linear-gradient(270deg, #030712 0%, transparent 100%); }
+
+  /* ===== 滚动条 ===== */
+  ::-webkit-scrollbar { width: 8px; }
+  ::-webkit-scrollbar-track { background: #030712; }
+  ::-webkit-scrollbar-thumb { background: rgba(34,211,238,0.3); border-radius: 4px; }
+  ::-webkit-scrollbar-thumb:hover { background: rgba(34,211,238,0.5); }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+    .reveal { opacity: 1; transform: none; }
+  }
+</style>
+</head>
+<body class="bg-slate-950 text-slate-300 font-sans overflow-x-hidden">
+
+<canvas id="geo-bg"></canvas>
+
+<!-- 径向发光光斑 -->
+<div class="fixed top-0 left-0 w-[600px] h-[600px] bg-cyan-500/15 rounded-full blur-[140px] pointer-events-none -translate-x-1/4 -translate-y-1/4"></div>
+<div class="fixed bottom-0 right-0 w-[600px] h-[600px] bg-indigo-500/15 rounded-full blur-[140px] pointer-events-none translate-x-1/4 translate-y-1/4"></div>
+
+<div class="cursor-dot" id="cursorDot"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- 导航 -->
+<nav class="fixed top-0 left-0 right-0 z-[100] bg-slate-950/70 backdrop-blur-xl border-b border-white/10">
+  <div class="max-w-3xl mx-auto px-5 md:px-8 py-3.5 md:py-4 flex items-center justify-between">
+    <a href="#hero" class="nav-brand flex items-center gap-1 text-base md:text-lg font-extrabold text-white tracking-tight transition-colors">
+      胡嘉磊<span class="text-cyan-400">.</span>
+    </a>
+    <div class="nav-links flex items-center gap-3 md:gap-5 text-xs md:text-sm text-slate-400">
+      <a href="#journey" class="flex items-center gap-1 hover:text-white transition-colors relative group">
+        <i data-lucide="graduation-cap" class="w-3.5 h-3.5"></i><span class="hidden sm:inline">求学</span>
+        <span class="absolute -bottom-1 left-0 w-0 h-px bg-cyan-400 transition-all group-hover:w-full"></span>
+      </a>
+      <a href="#works" class="flex items-center gap-1 hover:text-white transition-colors relative group">
+        <i data-lucide="sparkles" class="w-3.5 h-3.5"></i><span class="hidden sm:inline">成果</span>
+        <span class="absolute -bottom-1 left-0 w-0 h-px bg-cyan-400 transition-all group-hover:w-full"></span>
+      </a>
+      <a href="#skills" class="flex items-center gap-1 hover:text-white transition-colors relative group">
+        <i data-lucide="cpu" class="w-3.5 h-3.5"></i><span class="hidden sm:inline">技能</span>
+        <span class="absolute -bottom-1 left-0 w-0 h-px bg-cyan-400 transition-all group-hover:w-full"></span>
+      </a>
+      <a href="#certs" class="flex items-center gap-1 hover:text-white transition-colors relative group">
+        <i data-lucide="award" class="w-3.5 h-3.5"></i><span class="hidden sm:inline">认证</span>
+        <span class="absolute -bottom-1 left-0 w-0 h-px bg-cyan-400 transition-all group-hover:w-full"></span>
+      </a>
+      <a href="#thanks" class="flex items-center gap-1 hover:text-white transition-colors relative group">
+        <i data-lucide="heart" class="w-3.5 h-3.5"></i><span class="hidden sm:inline">鸣谢</span>
+        <span class="absolute -bottom-1 left-0 w-0 h-px bg-cyan-400 transition-all group-hover:w-full"></span>
+      </a>
+    </div>
+  </div>
+</nav>
+
+<main>
+  <!-- 1. 自我介绍 -->
+  <section id="hero" class="min-h-screen flex flex-col justify-center px-5 md:px-8 pt-28 md:pt-36 pb-12 md:pb-16 relative">
+    <div class="max-w-3xl mx-auto w-full">
+      <div class="reveal">
+        <div class="flex items-center justify-between gap-5 mb-6 md:mb-8">
+          <h1 class="flex items-end text-5xl sm:text-6xl md:text-7xl font-extrabold text-white tracking-tighter leading-none">
+            胡嘉磊<span class="inline-block w-3.5 h-3.5 md:w-5 md:h-5 rounded-full bg-orange-400 mb-1 md:mb-2 ml-1.5 flex-shrink-0"></span>
+          </h1>
+          <div class="hero-avatar w-20 h-20 md:w-28 md:h-28 rounded-full flex-shrink-0 border-[3px] border-white/15 overflow-hidden shadow-[0_6px_24px_-4px_rgba(0,229,255,0.2)]">
+            <img class="lazy-img w-full h-full object-cover" data-src="头像.jpg" alt="头像" onerror="this.onerror=null;this.removeAttribute('src');this.parentElement.style.background='rgba(22,28,42,0.78)';">
+          </div>
+        </div>
+        <p class="text-2xl md:text-3xl font-bold text-slate-400 mb-7 md:mb-9 leading-tight tracking-tight">保持谦虚。保持思考</p>
+        <p class="text-base md:text-lg text-slate-400 leading-relaxed mb-9 md:mb-10">
+          <strong class="text-white font-bold">江西理工大学</strong>本科生，是一个对<strong class="text-white font-bold">数学之美</strong>的痴迷者，<strong class="text-white font-bold">AI应用</strong>的探索者。
+        </p>
+
+        <!-- 联系卡片 -->
+        <div class="contact-card grid grid-cols-[0.8fr_1.1fr_1.1fr] gap-3 md:gap-5 p-4 md:p-6 rounded-2xl bg-slate-900/60 backdrop-blur-xl border border-white/10 items-center">
+          <div class="contact-col text-left min-w-0 overflow-hidden">
+            <div class="flex items-center gap-1 text-[11px] md:text-xs text-slate-500 mb-1 font-semibold">
+              <i data-lucide="phone" class="w-3 h-3"></i><span>手机号</span>
+            </div>
+            <div class="text-xs md:text-sm text-white font-semibold truncate">17879671983</div>
+          </div>
+          <div class="contact-col text-left min-w-0 overflow-hidden border-l border-white/10 pl-3 md:pl-5">
+            <div class="flex items-center gap-1 text-[11px] md:text-xs text-slate-500 mb-1 font-semibold">
+              <i data-lucide="message-circle" class="w-3 h-3"></i><span>微信号</span>
+            </div>
+            <div class="text-xs md:text-sm text-white font-semibold truncate">wxid_dd5h8q6q776j22</div>
+          </div>
+          <div class="contact-col text-left min-w-0 overflow-hidden border-l border-white/10 pl-3 md:pl-5">
+            <div class="flex items-center justify-between gap-1 text-[11px] md:text-xs text-slate-500 mb-1 font-semibold">
+              <span class="flex items-center gap-1"><i data-lucide="mail" class="w-3 h-3"></i><span>邮箱</span></span>
+              <button class="contact-copy flex items-center gap-0.5 text-cyan-400 hover:text-cyan-300 transition-colors text-[11px] font-semibold rounded-md px-1.5 py-0.5 hover:bg-cyan-500/10 border border-transparent hover:border-cyan-500/20" data-copy="1725334117@qq.com" title="复制邮箱">
+                <i data-lucide="copy" class="w-3 h-3"></i><span class="copy-text">复制</span>
+              </button>
+            </div>
+            <div class="text-xs md:text-sm text-white font-semibold truncate">1725334117@qq.com</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. 求知之路 -->
+  <section id="journey" class="py-16 md:py-24 px-5 md:px-8 relative">
+    <div class="max-w-3xl mx-auto w-full">
+      <div class="reveal mb-8 md:mb-10">
+        <div class="flex items-center gap-2 text-xs font-semibold tracking-[0.25em] uppercase text-cyan-400 mb-3">
+          <i data-lucide="route" class="w-3.5 h-3.5"></i><span>JOURNEY</span>
+        </div>
+        <h2 class="flex items-end text-3xl md:text-5xl font-extrabold text-white tracking-tight">
+          求知之路<span class="inline-block w-4 h-4 md:w-5 md:h-5 rounded-full bg-orange-400 mb-1.5 md:mb-3 ml-1.5 flex-shrink-0"></span>
+        </h2>
+      </div>
+      <div class="edu-card reveal rounded-2xl bg-slate-900/60 backdrop-blur-xl border border-white/10 overflow-hidden">
+        <div class="edu-row flex items-center justify-between gap-5 px-6 md:px-9 py-7 md:py-8 border-b border-white/10">
+          <div class="flex items-center gap-3 text-sm md:text-base text-slate-400 font-semibold flex-shrink-0">
+            <i data-lucide="building-2" class="w-4 h-4 text-cyan-400"></i><span>院校</span>
+          </div>
+          <div class="text-lg md:text-2xl text-white font-extrabold text-right tracking-tight">江西理工大学</div>
+        </div>
+        <div class="edu-row flex items-center justify-between gap-5 px-6 md:px-9 py-7 md:py-8 border-b border-white/10">
+          <div class="flex items-center gap-3 text-sm md:text-base text-slate-400 font-semibold flex-shrink-0">
+            <i data-lucide="book-open" class="w-4 h-4 text-cyan-400"></i><span>专业</span>
+          </div>
+          <div class="text-lg md:text-2xl text-white font-extrabold text-right tracking-tight">信息与计算科学</div>
+        </div>
+        <div class="edu-row flex items-center justify-between gap-5 px-6 md:px-9 py-7 md:py-8 border-b border-white/10">
+          <div class="flex items-center gap-3 text-sm md:text-base text-slate-400 font-semibold flex-shrink-0">
+            <i data-lucide="calendar" class="w-4 h-4 text-cyan-400"></i><span>阶段</span>
+          </div>
+          <div class="text-lg md:text-2xl text-white font-extrabold text-right tracking-tight">本科 (2025 - 2029)</div>
+        </div>
+        <div class="edu-row flex items-center justify-between gap-5 px-6 md:px-9 py-7 md:py-8">
+          <div class="flex items-center gap-3 text-sm md:text-base text-slate-400 font-semibold flex-shrink-0">
+            <i data-lucide="trending-up" class="w-4 h-4 text-cyan-400"></i><span>加权绩点 (GPA)</span>
+          </div>
+          <div class="text-lg md:text-2xl text-white font-extrabold text-right tracking-tight">不止步于课堂 / 4.0</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. 成果展示 -->
+  <section id="works" class="py-20 md:py-28 px-5 md:px-8 relative">
+    <div class="max-w-3xl mx-auto w-full">
+      <div class="reveal mb-8 md:mb-10">
+        <div class="flex items-center gap-2 text-xs font-semibold tracking-[0.25em] uppercase text-cyan-400 mb-3">
+          <i data-lucide="sparkles" class="w-3.5 h-3.5"></i><span>WORKS</span>
+        </div>
+        <h2 class="flex items-end text-3xl md:text-5xl font-extrabold text-white tracking-tight">
+          成果展示<span class="inline-block w-4 h-4 md:w-5 md:h-5 rounded-full bg-orange-400 mb-1.5 md:mb-3 ml-1.5 flex-shrink-0"></span>
+        </h2>
+      </div>
+      <div class="reveal border-t border-white/10">
+        <div class="work-row relative flex items-center gap-5 md:gap-8 py-7 md:py-10 border-b border-white/10 cursor-pointer overflow-hidden" data-image="AI1.png">
+          <div class="work-num-outline text-5xl md:text-7xl font-extrabold leading-none min-w-[64px] md:min-w-[100px] tracking-tighter">01</div>
+          <div class="work-content flex-1 min-w-0">
+            <div class="work-title-en text-xl md:text-2xl font-extrabold text-white tracking-wide uppercase mb-2 transition-all">Dynamic Visual Website</div>
+            <div class="work-title-zh text-sm md:text-base text-slate-400 leading-relaxed transition-all">Gemini + 零前端代码基础 = 动态视觉网站</div>
+          </div>
+          <div class="work-row-image w-[220px]"><img src="AI1.png" alt="AI 1" onerror="this.style.background='rgba(22,28,42,0.78)';this.style.minHeight='100px';"></div>
+        </div>
+        <div class="work-row relative flex items-center gap-5 md:gap-8 py-7 md:py-10 border-b border-white/10 cursor-pointer overflow-hidden" data-image="AI2.png">
+          <div class="work-num-outline text-5xl md:text-7xl font-extrabold leading-none min-w-[64px] md:min-w-[100px] tracking-tighter">02</div>
+          <div class="work-content flex-1 min-w-0">
+            <div class="work-title-en text-xl md:text-2xl font-extrabold text-white tracking-wide uppercase mb-2 transition-all">Automated Workflow</div>
+            <div class="work-title-zh text-sm md:text-base text-slate-400 leading-relaxed transition-all">自动工作流——每日自动化抓取信息</div>
+          </div>
+          <div class="work-row-image w-[220px]"><img src="AI2.png" alt="AI 2" onerror="this.style.background='rgba(22,28,42,0.78)';this.style.minHeight='100px';"></div>
+        </div>
+        <div class="work-row relative flex items-center gap-5 md:gap-8 py-7 md:py-10 border-b border-white/10 cursor-pointer overflow-hidden" data-image="AI3.png">
+          <div class="work-num-outline text-5xl md:text-7xl font-extrabold leading-none min-w-[64px] md:min-w-[100px] tracking-tighter">03</div>
+          <div class="work-content flex-1 min-w-0">
+            <div class="work-title-en text-xl md:text-2xl font-extrabold text-white tracking-wide uppercase mb-2 transition-all">Personal AI Employee</div>
+            <div class="work-title-zh text-sm md:text-base text-slate-400 leading-relaxed transition-all">系统提示词学习 + 固定提示词 = 私人AI雇员</div>
+          </div>
+          <div class="work-row-image w-[220px]"><img src="AI3.png" alt="AI 3" onerror="this.style.background='rgba(22,28,42,0.78)';this.style.minHeight='100px';"></div>
+        </div>
+        <div class="work-row relative flex items-center gap-5 md:gap-8 py-7 md:py-10 border-b border-white/10 cursor-pointer overflow-hidden" data-image="AI4.png">
+          <div class="work-num-outline text-5xl md:text-7xl font-extrabold leading-none min-w-[64px] md:min-w-[100px] tracking-tighter">04</div>
+          <div class="work-content flex-1 min-w-0">
+            <div class="work-title-en text-xl md:text-2xl font-extrabold text-white tracking-wide uppercase mb-2 transition-all">AI Presentation</div>
+            <div class="work-title-zh text-sm md:text-base text-slate-400 leading-relaxed transition-all">主题大纲 + 智能排版 = 一键生成精美PPT</div>
+          </div>
+          <div class="work-row-image w-[220px]"><img src="AI4.png" alt="AI 4" onerror="this.style.background='rgba(22,28,42,0.78)';this.style.minHeight='100px';"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. 专业技能 -->
+  <section id="skills" class="py-16 md:py-24 px-5 md:px-8 relative">
+    <div class="max-w-3xl mx-auto w-full">
+      <div class="reveal mb-8 md:mb-10">
+        <div class="flex items-center gap-2 text-xs font-semibold tracking-[0.25em] uppercase text-cyan-400 mb-3">
+          <i data-lucide="cpu" class="w-3.5 h-3.5"></i><span>SKILLS</span>
+        </div>
+        <h2 class="flex items-end text-3xl md:text-5xl font-extrabold text-white tracking-tight">
+          专业技能<span class="inline-block w-4 h-4 md:w-5 md:h-5 rounded-full bg-orange-400 mb-1.5 md:mb-3 ml-1.5 flex-shrink-0"></span>
+        </h2>
+      </div>
+      <div class="reveal star-border-container">
+        <div class="inner-content rounded-2xl bg-slate-900/60 backdrop-blur-xl border border-white/10 overflow-hidden">
+        <div class="skills-row flex items-start justify-between gap-5 px-6 md:px-9 py-7 md:py-8 border-b border-white/10">
+          <div class="flex items-center gap-3 text-sm md:text-base text-slate-400 font-semibold flex-shrink-0 min-w-[90px] md:min-w-[130px]">
+            <i data-lucide="code-2" class="w-4 h-4 text-cyan-400"></i><span>编程语言</span>
+          </div>
+          <div class="skills-tags flex flex-wrap gap-2 flex-1 justify-end">
+            <span class="skill-tag text-xs md:text-sm font-semibold px-3 md:px-4 py-1.5 md:py-2 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-300 transition-all hover:border-cyan-400/50 hover:bg-cyan-500/20 hover:-translate-y-0.5">C/C++<span class="text-orange-400 font-medium ml-1 text-[10px] md:text-xs">熟练</span></span>
+            <span class="skill-tag text-xs md:text-sm font-semibold px-3 md:px-4 py-1.5 md:py-2 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-300 transition-all hover:border-cyan-400/50 hover:bg-cyan-500/20 hover:-translate-y-0.5">MATLAB<span class="text-orange-400 font-medium ml-1 text-[10px] md:text-xs">熟练</span></span>
+            <span class="skill-tag text-xs md:text-sm font-semibold px-3 md:px-4 py-1.5 md:py-2 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-300 transition-all hover:border-cyan-400/50 hover:bg-cyan-500/20 hover:-translate-y-0.5">Python<span class="text-orange-400 font-medium ml-1 text-[10px] md:text-xs">熟悉</span></span>
+          </div>
+        </div>
+        <div class="skills-row flex items-start justify-between gap-5 px-6 md:px-9 py-7 md:py-8 border-b border-white/10">
+          <div class="flex items-center gap-3 text-sm md:text-base text-slate-400 font-semibold flex-shrink-0 min-w-[90px] md:min-w-[130px]">
+            <i data-lucide="sigma" class="w-4 h-4 text-cyan-400"></i><span>算法与建模</span>
+          </div>
+          <div class="skills-tags flex flex-wrap gap-2 flex-1 justify-end">
+            <span class="skill-tag text-xs md:text-sm font-semibold px-3 md:px-4 py-1.5 md:py-2 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-300 transition-all hover:border-cyan-400/50 hover:bg-cyan-500/20 hover:-translate-y-0.5">数值计算</span>
+            <span class="skill-tag text-xs md:text-sm font-semibold px-3 md:px-4 py-1.5 md:py-2 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-300 transition-all hover:border-cyan-400/50 hover:bg-cyan-500/20 hover:-translate-y-0.5">最优化算法</span>
+            <span class="skill-tag text-xs md:text-sm font-semibold px-3 md:px-4 py-1.5 md:py-2 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-300 transition-all hover:border-cyan-400/50 hover:bg-cyan-500/20 hover:-translate-y-0.5">统计分析</span>
+            <span class="skill-tag text-xs md:text-sm font-semibold px-3 md:px-4 py-1.5 md:py-2 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-300 transition-all hover:border-cyan-400/50 hover:bg-cyan-500/20 hover:-translate-y-0.5">组合优化</span>
+            <span class="skill-tag text-xs md:text-sm font-semibold px-3 md:px-4 py-1.5 md:py-2 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-300 transition-all hover:border-cyan-400/50 hover:bg-cyan-500/20 hover:-translate-y-0.5">A/B测试</span>
+          </div>
+        </div>
+        <div class="skills-row flex items-start justify-between gap-5 px-6 md:px-9 py-7 md:py-8">
+          <div class="flex items-center gap-3 text-sm md:text-base text-slate-400 font-semibold flex-shrink-0 min-w-[90px] md:min-w-[130px]">
+            <i data-lucide="wrench" class="w-4 h-4 text-cyan-400"></i><span>工程能力</span>
+          </div>
+          <div class="skills-tags flex flex-wrap gap-2 flex-1 justify-end">
+            <span class="skill-tag text-xs md:text-sm font-semibold px-3 md:px-4 py-1.5 md:py-2 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-300 transition-all hover:border-cyan-400/50 hover:bg-cyan-500/20 hover:-translate-y-0.5">单元测试</span>
+            <span class="skill-tag text-xs md:text-sm font-semibold px-3 md:px-4 py-1.5 md:py-2 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-300 transition-all hover:border-cyan-400/50 hover:bg-cyan-500/20 hover:-translate-y-0.5">代码Review</span>
+            <span class="skill-tag text-xs md:text-sm font-semibold px-3 md:px-4 py-1.5 md:py-2 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-300 transition-all hover:border-cyan-400/50 hover:bg-cyan-500/20 hover:-translate-y-0.5">方案撰写</span>
+            <span class="skill-tag text-xs md:text-sm font-semibold px-3 md:px-4 py-1.5 md:py-2 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-300 transition-all hover:border-cyan-400/50 hover:bg-cyan-500/20 hover:-translate-y-0.5">自动化脚本</span>
+          </div>
+        </div>
+        </div><!-- /inner-content -->
+      </div><!-- /star-border-container -->
+    </div>
+  </section>
+
+  <!-- 6. 专业认证 -->
+  <section id="certs" class="py-16 md:py-24 px-5 md:px-8 relative">
+    <div class="max-w-3xl mx-auto w-full">
+      <div class="reveal mb-8 md:mb-10">
+        <div class="flex items-center gap-2 text-xs font-semibold tracking-[0.25em] uppercase text-cyan-400 mb-3">
+          <i data-lucide="award" class="w-3.5 h-3.5"></i><span>CERTIFICATIONS</span>
+        </div>
+        <div class="flex items-center gap-4">
+          <span class="w-10 h-1 bg-cyan-400 rounded-full"></span>
+          <h2 class="text-2xl md:text-4xl font-extrabold text-white tracking-tight">专业认证</h2>
+          <span class="text-base md:text-2xl font-bold text-slate-500 tracking-wide">10</span>
+          <button type="button" class="cert-cam-btn" id="certTrailBtn" aria-label="查看认证图集" title="查看认证图集">
+            <svg viewBox="0 0 52 48" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <!-- 左胶片盘 -->
+              <circle cx="12" cy="12" r="8"/>
+              <circle cx="12" cy="12" r="1.8" fill="currentColor" stroke="none"/>
+              <circle cx="12" cy="6.5" r="1.3" fill="currentColor" stroke="none"/>
+              <circle cx="17" cy="14.5" r="1.3" fill="currentColor" stroke="none"/>
+              <circle cx="7" cy="14.5" r="1.3" fill="currentColor" stroke="none"/>
+              <!-- 右胶片盘 -->
+              <circle cx="33" cy="12" r="8"/>
+              <circle cx="33" cy="12" r="1.8" fill="currentColor" stroke="none"/>
+              <circle cx="33" cy="6.5" r="1.3" fill="currentColor" stroke="none"/>
+              <circle cx="38" cy="14.5" r="1.3" fill="currentColor" stroke="none"/>
+              <circle cx="28" cy="14.5" r="1.3" fill="currentColor" stroke="none"/>
+              <!-- 机身 -->
+              <rect x="7" y="24" width="22" height="17" rx="2.5"/>
+              <rect x="17" y="28.5" width="10" height="5" rx="1"/>
+              <circle cx="12" cy="36" r="2.6"/>
+              <circle cx="12" cy="36" r="0.9" fill="currentColor" stroke="none"/>
+              <circle cx="20" cy="38" r="1.2" fill="currentColor" stroke="none"/>
+              <!-- 镜头锥 -->
+              <path d="M29 30 L39 26.5 L39 38.5 L29 35 Z"/>
+              <!-- 投影光束 -->
+              <path d="M39 29 L49 26" stroke-opacity="0.55"/>
+              <path d="M39 36 L49 39" stroke-opacity="0.55"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+      <div class="cert-sphere-stage reveal" id="certSphereStage">
+        <!-- 上行：5 张，向左滑动 -->
+        <div class="cert-marquee-row mb-4" data-direction="left">
+          <div class="cert-marquee-track gap-4">
+            <div class="cert-sphere-item flex-[0_0_auto] w-[200px] h-[120px] md:w-[300px] md:h-[180px] rounded-2xl overflow-hidden bg-slate-900 border border-white/10 relative transition-all hover:-translate-y-1 hover:border-cyan-400/50 hover:shadow-[0_16px_40px_-8px_rgba(99,102,241,0.25)]">
+              <img class="lazy-img w-full h-full object-cover" data-src="certificate.jpg" alt="综合证书" onerror="this.onerror=null;this.style.background='rgba(22,28,42,0.78)';">
+              <span class="absolute left-0 right-0 bottom-0 px-3 py-2 pt-8 bg-gradient-to-t from-black/85 to-transparent text-white text-[10px] md:text-xs font-semibold tracking-wide">综合证书</span>
+            </div>
+            <div class="cert-sphere-item flex-[0_0_auto] w-[200px] h-[120px] md:w-[300px] md:h-[180px] rounded-2xl overflow-hidden bg-slate-900 border border-white/10 relative transition-all hover:-translate-y-1 hover:border-cyan-400/50 hover:shadow-[0_16px_40px_-8px_rgba(99,102,241,0.25)]">
+              <img class="lazy-img w-full h-full object-cover" data-src="PAI AICG 设计.jpg" alt="PAI AICG 设计" onerror="this.onerror=null;this.style.background='rgba(22,28,42,0.78)';">
+              <span class="absolute left-0 right-0 bottom-0 px-3 py-2 pt-8 bg-gradient-to-t from-black/85 to-transparent text-white text-[10px] md:text-xs font-semibold tracking-wide">PAI AICG 设计</span>
+            </div>
+            <div class="cert-sphere-item flex-[0_0_auto] w-[200px] h-[120px] md:w-[300px] md:h-[180px] rounded-2xl overflow-hidden bg-slate-900 border border-white/10 relative transition-all hover:-translate-y-1 hover:border-cyan-400/50 hover:shadow-[0_16px_40px_-8px_rgba(99,102,241,0.25)]">
+              <img class="lazy-img w-full h-full object-cover" data-src="rag应用.jpg" alt="RAG 应用" onerror="this.onerror=null;this.style.background='rgba(22,28,42,0.78)';">
+              <span class="absolute left-0 right-0 bottom-0 px-3 py-2 pt-8 bg-gradient-to-t from-black/85 to-transparent text-white text-[10px] md:text-xs font-semibold tracking-wide">RAG 应用</span>
+            </div>
+            <div class="cert-sphere-item flex-[0_0_auto] w-[200px] h-[120px] md:w-[300px] md:h-[180px] rounded-2xl overflow-hidden bg-slate-900 border border-white/10 relative transition-all hover:-translate-y-1 hover:border-cyan-400/50 hover:shadow-[0_16px_40px_-8px_rgba(99,102,241,0.25)]">
+              <img class="lazy-img w-full h-full object-cover" data-src="springAI 应用.jpg" alt="SpringAI 应用" onerror="this.onerror=null;this.style.background='rgba(22,28,42,0.78)';">
+              <span class="absolute left-0 right-0 bottom-0 px-3 py-2 pt-8 bg-gradient-to-t from-black/85 to-transparent text-white text-[10px] md:text-xs font-semibold tracking-wide">SpringAI 应用</span>
+            </div>
+            <div class="cert-sphere-item flex-[0_0_auto] w-[200px] h-[120px] md:w-[300px] md:h-[180px] rounded-2xl overflow-hidden bg-slate-900 border border-white/10 relative transition-all hover:-translate-y-1 hover:border-cyan-400/50 hover:shadow-[0_16px_40px_-8px_rgba(99,102,241,0.25)]">
+              <img class="lazy-img w-full h-full object-cover" data-src="人工智能训练师（初级）-胡嘉磊-20260815.jpg" alt="人工智能训练师（初级）" onerror="this.onerror=null;this.style.background='rgba(22,28,42,0.78)';">
+              <span class="absolute left-0 right-0 bottom-0 px-3 py-2 pt-8 bg-gradient-to-t from-black/85 to-transparent text-white text-[10px] md:text-xs font-semibold tracking-wide">训练师（初级）</span>
+            </div>
+          </div>
+        </div>
+        <!-- 下行：5 张，向右滑动 -->
+        <div class="cert-marquee-row reverse" data-direction="right">
+          <div class="cert-marquee-track gap-4">
+            <div class="cert-sphere-item flex-[0_0_auto] w-[200px] h-[120px] md:w-[300px] md:h-[180px] rounded-2xl overflow-hidden bg-slate-900 border border-white/10 relative transition-all hover:-translate-y-1 hover:border-cyan-400/50 hover:shadow-[0_16px_40px_-8px_rgba(99,102,241,0.25)]">
+              <img class="lazy-img w-full h-full object-cover" data-src="VISION设计进阶.jpg" alt="VISION 设计进阶" onerror="this.onerror=null;this.style.background='rgba(22,28,42,0.78)';">
+              <span class="absolute left-0 right-0 bottom-0 px-3 py-2 pt-8 bg-gradient-to-t from-black/85 to-transparent text-white text-[10px] md:text-xs font-semibold tracking-wide">VISION 设计进阶</span>
+            </div>
+            <div class="cert-sphere-item flex-[0_0_auto] w-[200px] h-[120px] md:w-[300px] md:h-[180px] rounded-2xl overflow-hidden bg-slate-900 border border-white/10 relative transition-all hover:-translate-y-1 hover:border-cyan-400/50 hover:shadow-[0_16px_40px_-8px_rgba(99,102,241,0.25)]">
+              <img class="lazy-img w-full h-full object-cover" data-src="VISION设计入门.jpg" alt="VISION 设计入门" onerror="this.onerror=null;this.style.background='rgba(22,28,42,0.78)';">
+              <span class="absolute left-0 right-0 bottom-0 px-3 py-2 pt-8 bg-gradient-to-t from-black/85 to-transparent text-white text-[10px] md:text-xs font-semibold tracking-wide">VISION 设计入门</span>
+            </div>
+            <div class="cert-sphere-item flex-[0_0_auto] w-[200px] h-[120px] md:w-[300px] md:h-[180px] rounded-2xl overflow-hidden bg-slate-900 border border-white/10 relative transition-all hover:-translate-y-1 hover:border-cyan-400/50 hover:shadow-[0_16px_40px_-8px_rgba(99,102,241,0.25)]">
+              <img class="lazy-img w-full h-full object-cover" data-src="百炼构建.jpg" alt="百炼构建" onerror="this.onerror=null;this.style.background='rgba(22,28,42,0.78)';">
+              <span class="absolute left-0 right-0 bottom-0 px-3 py-2 pt-8 bg-gradient-to-t from-black/85 to-transparent text-white text-[10px] md:text-xs font-semibold tracking-wide">百炼构建</span>
+            </div>
+            <div class="cert-sphere-item flex-[0_0_auto] w-[200px] h-[120px] md:w-[300px] md:h-[180px] rounded-2xl overflow-hidden bg-slate-900 border border-white/10 relative transition-all hover:-translate-y-1 hover:border-cyan-400/50 hover:shadow-[0_16px_40px_-8px_rgba(99,102,241,0.25)]">
+              <img class="lazy-img w-full h-full object-cover" data-src="大模型生产.jpg" alt="大模型生产" onerror="this.onerror=null;this.style.background='rgba(22,28,42,0.78)';">
+              <span class="absolute left-0 right-0 bottom-0 px-3 py-2 pt-8 bg-gradient-to-t from-black/85 to-transparent text-white text-[10px] md:text-xs font-semibold tracking-wide">大模型生产</span>
+            </div>
+            <div class="cert-sphere-item flex-[0_0_auto] w-[200px] h-[120px] md:w-[300px] md:h-[180px] rounded-2xl overflow-hidden bg-slate-900 border border-white/10 relative transition-all hover:-translate-y-1 hover:border-cyan-400/50 hover:shadow-[0_16px_40px_-8px_rgba(99,102,241,0.25)]">
+              <img class="lazy-img w-full h-full object-cover" data-src="人工智能训练师（高级）-胡嘉磊-20260817.jpg" alt="人工智能训练师（高级）" onerror="this.onerror=null;this.style.background='rgba(22,28,42,0.78)';">
+              <span class="absolute left-0 right-0 bottom-0 px-3 py-2 pt-8 bg-gradient-to-t from-black/85 to-transparent text-white text-[10px] md:text-xs font-semibold tracking-wide">训练师（高级）</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="reveal text-center text-[11px] md:text-xs text-slate-500 mt-4 md:mt-5 tracking-[0.12em] font-semibold flex items-center justify-center gap-1.5">
+        <i data-lucide="mouse-pointer-click" class="w-3 h-3"></i><span>悬停暂停 · 自动滑动</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7. 特别鸣谢 -->
+  <section id="thanks" class="py-16 md:py-24 pb-28 md:pb-36 px-5 md:px-8 relative">
+    <div class="max-w-3xl mx-auto w-full">
+      <div class="reveal mb-7 md:mb-8">
+        <div class="flex items-center gap-2 text-xs font-bold tracking-[0.12em] text-orange-400 mb-5">
+          <span class="inline-block w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-b-[9px] border-b-orange-400"></span>
+          <span>SPECIAL_THANKS</span>
+          <span class="text-slate-500 font-medium">//</span>
+          <span class="text-slate-300 font-medium">鸣谢</span>
+        </div>
+        <h2 class="flex items-end text-3xl md:text-5xl font-extrabold text-white tracking-tight">
+          特别鸣谢<span class="text-slate-500 font-normal mx-1.5">——</span>浪尖儿社区<span class="inline-block w-4 h-4 md:w-5 md:h-5 rounded-full bg-orange-400 mb-1.5 md:mb-3 ml-1.5 flex-shrink-0"></span>
+        </h2>
+      </div>
+      <div class="reveal">
+        <p class="text-sm md:text-lg text-slate-400 leading-relaxed mb-8 md:mb-10">
+          感谢浪尖儿社区的培养，一步一步地带着我学习大学不教的技能。从 AI 应用、找实习、PPT 设计、视频剪辑、自媒体运营等硬技能，到大学规则的去魅、情商培养，甚至是资本趋势等信息。
+        </p>
+        <div class="thanks-image-card rounded-2xl overflow-hidden bg-slate-900 border border-white/10 transition-all hover:-translate-y-1 hover:shadow-[0_20px_50px_-10px_rgba(168,85,247,0.25)]">
+          <img class="lazy-img w-full h-auto" data-src="浪尖儿.jpg" alt="浪尖儿社区" onerror="this.onerror=null;this.removeAttribute('src');this.parentElement.style.display='none';">
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="py-8 text-center border-t border-white/10 text-xs text-slate-500">
+  <div>© 2026 胡嘉磊 · 保持谦虚，保持思考</div>
+</footer>
+
+<button class="to-top fixed bottom-5 right-5 z-[90] w-11 h-11 rounded-full bg-white text-slate-950 flex items-center justify-center opacity-0 translate-y-5 pointer-events-none transition-all hover:bg-cyan-400" id="toTop" aria-label="返回顶部" style="opacity:0;transform:translateY(20px) scale(0.8);">
+  <i data-lucide="arrow-up" class="w-5 h-5"></i>
+</button>
+
+<!-- Toast 提示 -->
+<div class="toast fixed bottom-20 left-1/2 -translate-x-1/2 translate-y-5 bg-slate-900/80 backdrop-blur-xl border border-white/10 text-white px-5 py-2.5 rounded-xl text-sm shadow-2xl opacity-0 pointer-events-none transition-all z-[200] whitespace-nowrap flex items-center gap-2" id="toast">
+  <i data-lucide="check-circle-2" class="w-4 h-4 text-cyan-400"></i><span class="toast-msg"></span>
+</div>
+
+<!-- 成果覆盖页 -->
+<div class="works-overlay" id="worksOverlay">
+  <div class="works-overlay-close" id="worksOverlayClose" title="关闭 (Esc)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+  </div>
+  <div class="absolute inset-0 flex flex-col items-center justify-center z-[5]">
+    <div class="works-overlay-title">AI+</div>
+    <div class="works-overlay-line"></div>
+    <div class="works-overlay-subtitle font-mono" id="worksOverlaySubtitle">AI +</div>
+  </div>
+</div>
+
+<!-- 专业认证：图集覆盖页（ImageTrail 鼠标轨迹） -->
+<div class="cert-trail-overlay" id="certTrailOverlay">
+  <div class="cert-trail-content" id="certTrailContent"></div>
+  <button class="cert-trail-close" id="certTrailClose" type="button" aria-label="关闭" title="关闭 (Esc)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+  </button>
+  <div class="cert-trail-hint">移动鼠标或滑动查看 · 点击关闭</div>
+</div>
+
+<script>
+/* ========== Lucide 图标初始化 ========== */
+function initIcons() {
+  if (window.lucide && typeof lucide.createIcons === 'function') {
+    lucide.createIcons();
+  }
+}
+
+/* ========== 磁力光标 ========== */
+const dot = document.getElementById('cursorDot');
+const ring = document.getElementById('cursorRing');
+const isDesktop = window.matchMedia('(hover: hover) and (min-width: 769px)').matches;
+
+if (isDesktop && dot && ring) {
+  let mouseX = window.innerWidth / 2, mouseY = window.innerHeight / 2;
+  let ringX = mouseX, ringY = mouseY;
+
+  window.addEventListener('mousemove', (e) => {
+    mouseX = e.clientX; mouseY = e.clientY;
+    dot.style.left = mouseX + 'px';
+    dot.style.top = mouseY + 'px';
+  });
+
+  function animate() {
+    ringX += (mouseX - ringX) * 0.18;
+    ringY += (mouseY - ringY) * 0.18;
+    ring.style.left = ringX + 'px';
+    ring.style.top = ringY + 'px';
+    requestAnimationFrame(animate);
+  }
+  animate();
+
+  const hoverables = 'a, button, .contact-card, .work-row, .edu-card, .hero-avatar, .thanks-image-card, .cert-sphere-item, .skill-tag';
+  document.addEventListener('mouseover', (e) => {
+    if (e.target.closest(hoverables)) { dot.classList.add('hovering'); ring.classList.add('hovering'); }
+  });
+  document.addEventListener('mouseout', (e) => {
+    if (e.target.closest(hoverables)) { dot.classList.remove('hovering'); ring.classList.remove('hovering'); }
+  });
+
+  // 成果板块：鼠标跟随渐变 + 图片弹出
+  document.querySelectorAll('.work-row').forEach((row) => {
+    const imgEl = row.querySelector('.work-row-image');
+    row.addEventListener('mousemove', (e) => {
+      const rect = row.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      const px = (x / rect.width) * 100;
+      const py = (y / rect.height) * 100;
+      row.style.setProperty('--mx', px + '%');
+      row.style.setProperty('--my', py + '%');
+      if (imgEl) {
+        const rot = ((x / rect.width) - 0.5) * -36;
+        imgEl.style.left = x + 'px';
+        imgEl.style.top = y + 'px';
+        imgEl.style.transform = `translate(-50%, -50%) rotate(${rot}deg) scale(1)`;
+      }
+    });
+    row.addEventListener('mouseleave', () => {
+      row.style.setProperty('--mx', '50%');
+      row.style.setProperty('--my', '50%');
+      if (imgEl) { imgEl.style.transform = 'translate(-50%, -50%) rotate(-15deg) scale(0.5)'; }
+    });
+    row.addEventListener('mouseenter', () => {
+      const rect = row.getBoundingClientRect();
+      imgEl.style.left = rect.width * 0.5 + 'px';
+      imgEl.style.top = rect.height * 0.5 + 'px';
+    });
+  });
+
+  // 磁力吸附按钮
+  document.querySelectorAll('.nav-brand, .to-top').forEach((el) => {
+    el.addEventListener('mousemove', (e) => {
+      const rect = el.getBoundingClientRect();
+      const cx = rect.left + rect.width / 2;
+      const cy = rect.top + rect.height / 2;
+      const dx = (e.clientX - cx) * 0.25;
+      const dy = (e.clientY - cy) * 0.25;
+      el.style.transform = `translate(${dx}px, ${dy}px)`;
+    });
+    el.addEventListener('mouseleave', () => { el.style.transform = ''; });
+  });
+}
+
+/* ========== 图片懒加载 ========== */
+function setupLazyImages() {
+  const imgs = document.querySelectorAll('img[data-src]');
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        const img = entry.target;
+        img.src = img.dataset.src;
+        img.addEventListener('load', () => img.classList.add('loaded'));
+        img.addEventListener('error', () => {
+          img.parentElement.style.background = 'rgba(22,28,42,0.78)';
+        });
+        obs.unobserve(img);
+      }
+    });
+  }, { rootMargin: '50px' });
+  imgs.forEach((img) => {
+    if (img.closest('.cert-marquee-track')) return;
+    obs.observe(img);
+  });
+}
+
+/* ========== 淡入动画 ========== */
+function setupReveal() {
+  const els = document.querySelectorAll('.reveal');
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) { entry.target.classList.add('in'); obs.unobserve(entry.target); }
+    });
+  }, { threshold: 0.12 });
+  els.forEach((el) => obs.observe(el));
+}
+
+/* ========== 复制邮箱 ========== */
+function setupCopy() {
+  document.querySelectorAll('.contact-copy').forEach((btn) => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const text = btn.dataset.copy;
+      const copyText = btn.querySelector('.copy-text');
+      const originalText = copyText ? copyText.textContent : '';
+      const fallback = () => {
+        const ta = document.createElement('textarea');
+        ta.value = text; document.body.appendChild(ta); ta.select();
+        try { document.execCommand('copy'); showToast('已复制：' + text); } catch (err) {}
+        document.body.removeChild(ta);
+      };
+      const onDone = () => {
+        btn.classList.add('copied');
+        if (copyText) copyText.textContent = '已复制';
+        showToast('已复制：' + text);
+        setTimeout(() => {
+          btn.classList.remove('copied');
+          if (copyText) copyText.textContent = originalText;
+        }, 2000);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(onDone).catch(() => { fallback(); btn.classList.add('copied'); if (copyText) copyText.textContent = '已复制'; setTimeout(() => { btn.classList.remove('copied'); if (copyText) copyText.textContent = originalText; }, 2000); });
+      } else {
+        fallback();
+        btn.classList.add('copied');
+        if (copyText) copyText.textContent = '已复制';
+        setTimeout(() => { btn.classList.remove('copied'); if (copyText) copyText.textContent = originalText; }, 2000);
+      }
+    });
+  });
+}
+
+/* ========== Toast ========== */
+const toast = document.getElementById('toast');
+let toastTimer;
+function showToast(msg) {
+  const msgEl = toast.querySelector('.toast-msg');
+  if (msgEl) msgEl.textContent = msg;
+  toast.classList.add('show');
+  toast.style.opacity = '1';
+  toast.style.transform = 'translateX(-50%) translateY(0)';
+  toast.style.pointerEvents = 'auto';
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => {
+    toast.classList.remove('show');
+    toast.style.opacity = '0';
+    toast.style.transform = 'translateX(-50%) translateY(20px)';
+    toast.style.pointerEvents = 'none';
+  }, 2200);
+}
+
+/* ========== 返回顶部 ========== */
+const toTop = document.getElementById('toTop');
+window.addEventListener('scroll', () => {
+  const show = window.scrollY > 400;
+  toTop.classList.toggle('show', show);
+  if (show) {
+    toTop.style.opacity = '1';
+    toTop.style.transform = 'translateY(0) scale(1)';
+    toTop.style.pointerEvents = 'auto';
+  } else {
+    toTop.style.opacity = '0';
+    toTop.style.transform = 'translateY(20px) scale(0.8)';
+    toTop.style.pointerEvents = 'none';
+  }
+}, { passive: true });
+toTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+
+/* ========== 导航锚点高亮 ========== */
+const navLinks = document.querySelectorAll('.nav-links a');
+const sections = document.querySelectorAll('main section');
+window.addEventListener('scroll', () => {
+  let cur = '';
+  sections.forEach((s) => {
+    if (window.scrollY >= s.offsetTop - 120) cur = s.id;
+  });
+  navLinks.forEach((a) => {
+    a.style.color = a.getAttribute('href') === '#' + cur ? '#22d3ee' : '';
+  });
+}, { passive: true });
+
+/* ========== 认证平面滑动 ========== */
+function setupCertSphere() {
+  const stage = document.getElementById('certSphereStage');
+  if (!stage) return;
+
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const rows = stage.querySelectorAll('.cert-marquee-row');
+
+  rows.forEach((row) => {
+    const track = row.querySelector('.cert-marquee-track');
+    if (!track) return;
+
+    const direction = row.dataset.direction || 'left';
+    const speed = 0.5;
+    let offset = 0;
+    let paused = false;
+    let inView = false;
+    let halfWidth = 0;
+
+    const originalHTML = track.innerHTML;
+    track.innerHTML = originalHTML + originalHTML;
+
+    track.querySelectorAll('img[data-src]').forEach((img) => {
+      img.src = img.dataset.src;
+      img.addEventListener('load', () => img.classList.add('loaded'), { once: true });
+      img.addEventListener('error', () => { img.style.background = 'rgba(22,28,42,0.78)'; img.classList.add('loaded'); }, { once: true });
+    });
+
+    halfWidth = track.scrollWidth / 2;
+
+    if (direction === 'right') {
+      offset = -halfWidth;
+      track.style.transform = `translateX(${offset}px)`;
+    }
+
+    function tick() {
+      if (!inView || paused) { requestAnimationFrame(tick); return; }
+      if (direction === 'left') {
+        offset -= speed;
+        if (Math.abs(offset) >= halfWidth) offset += halfWidth;
+      } else {
+        offset += speed;
+        if (offset >= 0) offset -= halfWidth;
+      }
+      track.style.transform = `translateX(${offset}px)`;
+      requestAnimationFrame(tick);
+    }
+
+    const onResize = () => {
+      halfWidth = track.scrollWidth / 2;
+      if (direction === 'right' && offset > -halfWidth) offset = -halfWidth;
+    };
+    window.addEventListener('resize', onResize);
+
+    const viewObs = new IntersectionObserver((entries) => {
+      entries.forEach((e) => { inView = e.isIntersecting; });
+    }, { threshold: 0.05 });
+    viewObs.observe(row);
+
+    row.addEventListener('mouseenter', () => { paused = true; });
+    row.addEventListener('mouseleave', () => { paused = false; });
+
+    if (!reducedMotion) tick();
+  });
+}
+
+/* ========== 赛博极客 Canvas 背景 ========== */
+function setupGeoBg() {
+  const canvas = document.getElementById('geo-bg');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+
+  let W = 0, H = 0, DPR = Math.min(window.devicePixelRatio || 1, 2);
+  let running = false;
+  let frameId = null;
+  let t = 0;
+  const rotationSpeed = 0.0005;
+
+  const mouse = { x: 0, y: 0, tx: 0, ty: 0, inWin: false };
+  const particles = [];
+  for (let i = 0; i < 3; i++) particles.push({ ox: 0, oy: 0, angle: Math.random() * Math.PI * 2 });
+
+  function resize() {
+    W = window.innerWidth;
+    H = window.innerHeight;
+    canvas.width = W * DPR;
+    canvas.height = H * DPR;
+    canvas.style.width = W + 'px';
+    canvas.style.height = H + 'px';
+    ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) { running = false; if (frameId) cancelAnimationFrame(frameId); }
+    else { running = true; frameId = requestAnimationFrame(loop); }
+  });
+
+  window.addEventListener('mousemove', (e) => {
+    mouse.tx = (e.clientX / W - 0.5) * 2;
+    mouse.ty = (e.clientY / H - 0.5) * 2;
+    mouse.px = e.clientX;
+    mouse.py = e.clientY;
+    mouse.inWin = true;
+  });
+  window.addEventListener('mouseleave', () => { mouse.inWin = false; });
+
+  function canRender(text) {
+    try {
+      const off = document.createElement('canvas');
+      off.width = 40; off.height = 40;
+      const c = off.getContext('2d');
+      c.textBaseline = 'top';
+      c.font = '20px "Times New Roman", "Noto Sans Math", "Symbol", "Segoe UI Symbol", "Apple Symbols", serif';
+      c.fillText(text, 0, 0);
+      const c2 = document.createElement('canvas').getContext('2d');
+      c2.font = '20px monospace';
+      const wMono = c2.measureText(text).width;
+      c.font = '20px "Times New Roman", "Noto Sans Math", "Symbol", "Segoe UI Symbol", "Apple Symbols", serif';
+      const wSerif = c.measureText(text).width;
+      if (text.length === 1 && text.charCodeAt(0) > 127) {
+        if (Math.abs(wMono - wSerif) < 0.01 && wMono > 0) {
+          const tofuW = c.measureText('\u25a1').width;
+          if (Math.abs(wSerif - tofuW) < 0.02) return false;
+        }
+      }
+      return true;
+    } catch (e) { return true; }
+  }
+
+  const _hasSigma = canRender('\u2211');
+  const _hasInt = canRender('\u222b');
+  const MATH_RAW = [
+    _hasInt ? '∫' : '[int]',
+    _hasSigma ? '∑' : '[sum]',
+    _hasSigma ? '∂' : 'd',
+    _hasInt ? 'π' : 'pi',
+    _hasInt ? 'λ' : 'lam',
+    _hasSigma ? '∇' : 'nabla',
+    '∞',
+    _hasInt ? '∈' : 'in',
+    '{', '}',
+    'lim', 'log', 'dx', 'dy', 'sin', 'cos', 'exp', 'sqrt',
+  ];
+  const EGGS = ['<h.j.l>', '.... ..- -- -... .-.. .'];
+
+  const symbols = [];
+  const SYM_COUNT = 20;
+  const MIN_DIST = 35;
+
+  for (let i = 0; i < SYM_COUNT; i++) {
+    let x = 0, y = 0, ok = false;
+    for (let tryN = 0; tryN < 50; tryN++) {
+      x = 40 + Math.random() * (W - 80);
+      y = 40 + Math.random() * (H - 80);
+      let pass = true;
+      for (let j = 0; j < symbols.length; j++) {
+        const dx = x - symbols[j].x;
+        const dy = y - symbols[j].y;
+        if (dx * dx + dy * dy < MIN_DIST * MIN_DIST) { pass = false; break; }
+      }
+      if (pass) { ok = true; break; }
+    }
+    if (!ok) continue;
+
+    const isEgg = Math.random() < 0.07;
+    const pool = isEgg ? EGGS : MATH_RAW;
+    const txt = pool[Math.floor(Math.random() * pool.length)];
+
+    symbols.push({
+      x: x, y: y, baseY: y,
+      scale: Math.random() * 0.5 + 0.5,
+      alpha: 0.15,
+      speed: 0.002 + Math.random() * 0.008,
+      seed: Math.random() * Math.PI * 2,
+      driftDir: Math.random() < 0.5 ? 1 : -1,
+      rot: (Math.random() - 0.5) * 0.25,
+      color: Math.random() < 0.4 ? '#a855f7' : (Math.random() < 0.5 ? '#22d3ee' : '#00e5ff'),
+      text: txt, egg: isEgg,
+    });
+  }
+
+  const BIN_CHARS = ['0', '1'];
+  const bins = [];
+  const BIN_COUNT = Math.min(50, Math.floor(W / 40));
+  for (let i = 0; i < BIN_COUNT; i++) {
+    const len = 8 + Math.floor(Math.random() * 22);
+    bins.push({
+      x: Math.random() * W, y: Math.random() * H,
+      speed: 0.2 + Math.random() * 0.9,
+      chars: Array.from({ length: len }, () => BIN_CHARS[Math.random() < 0.5 ? 0 : 1]),
+      size: 9 + Math.random() * 6,
+      alpha: 0.04 + Math.random() * 0.1,
+      hue: Math.random() < 0.5 ? '#00e5ff' : '#22d3ee',
+    });
+  }
+
+  function drawGrid() {
+    const vpx = W / 2 + mouse.x * 40;
+    const vpy = H * 0.55 + mouse.y * 20;
+    const horizonY = vpy;
+    const rows = 22;
+    const cols = 32;
+    const horizonFade = 0.85;
+
+    ctx.save();
+    ctx.translate(vpx, vpy);
+    const rot = t * rotationSpeed;
+    const skew = Math.sin(rot) * 0.25;
+    const rowsBefore = 11;
+
+    for (let r = 1; r <= rows; r++) {
+      const depth = (r - 1) / rows;
+      const scaleY = 1 / (1 + depth * 5.5);
+      const zAlpha = (1 - depth) * horizonFade;
+      if (zAlpha <= 0.01) continue;
+      const yOffset = (r - rowsBefore) * (H * 0.5 * scaleY);
+      const leftX = -W * 0.9 * scaleY + skew * yOffset * 0.3;
+      const rightX = W * 0.9 * scaleY + skew * yOffset * 0.3;
+      const sy = yOffset;
+      if (sy < -H * 1.2 || sy > H * 1.2) continue;
+      const a = zAlpha * (0.18 + 0.1 * Math.sin(t * 0.001 + r * 0.5));
+      ctx.strokeStyle = `rgba(0, 229, 255, ${a})`;
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(leftX, sy);
+      ctx.lineTo(rightX, sy);
+      ctx.stroke();
+    }
+
+    const vLines = 24;
+    for (let c = -vLines; c <= vLines; c++) {
+      if (c === 0) continue;
+      const tStart = 0;
+      const tEnd = H * 2.2;
+      const startX = skew * (W * 0.05) + c * 4;
+      const scaleYEnd = 1 / (1 + 5);
+      const endX = c * (W * 0.9 * scaleYEnd) * 0.55 + skew * tEnd * 0.1;
+      const endY = tEnd;
+      const alpha = 0.22 + 0.08 * Math.sin(t * 0.001 + c * 0.7);
+      const grd = ctx.createLinearGradient(0, tStart, 0, endY);
+      grd.addColorStop(0, `rgba(0, 229, 255, ${alpha * 0.85})`);
+      grd.addColorStop(1, `rgba(0, 229, 255, 0)`);
+      ctx.strokeStyle = grd;
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(startX, tStart);
+      ctx.lineTo(endX, endY);
+      ctx.stroke();
+    }
+    ctx.restore();
+
+    const vg = ctx.createRadialGradient(vpx, horizonY, 0, vpx, horizonY, 220);
+    vg.addColorStop(0, 'rgba(0, 229, 255, 0.18)');
+    vg.addColorStop(0.5, 'rgba(168, 85, 247, 0.06)');
+    vg.addColorStop(1, 'rgba(0, 229, 255, 0)');
+    ctx.fillStyle = vg;
+    ctx.fillRect(vpx - 260, horizonY - 260, 520, 520);
+  }
+
+  function drawSymbols() {
+    for (let i = 0; i < symbols.length; i++) {
+      const s = symbols[i];
+      if (t % 500 === 0 && Math.random() < 0.5) s.driftDir = -s.driftDir;
+      const driftY = s.driftDir * Math.sin(t * s.speed + s.seed) * 0.2;
+      s.baseY += driftY;
+      if (s.baseY < -60) s.baseY = H + 40;
+      if (s.baseY > H + 60) s.baseY = -40;
+      const parX = mouse.x * (1 - s.scale) * 24;
+      const parY = mouse.y * (1 - s.scale) * 14;
+      const xx = s.x + parX;
+      const yy = s.baseY + parY;
+      if (xx < -120 || xx > W + 120 || yy < -120 || yy > H + 120) continue;
+      ctx.save();
+      ctx.translate(xx, yy);
+      ctx.rotate(s.rot);
+      ctx.scale(s.scale, s.scale);
+      const weight = s.egg ? 700 : 600;
+      ctx.font = `${weight} 20px "Times New Roman", "Noto Sans Math", "Symbol", "Segoe UI Symbol", "Apple Symbols", serif`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.globalAlpha = s.alpha;
+      ctx.shadowColor = s.color;
+      ctx.shadowBlur = s.egg ? 20 : 8;
+      ctx.fillStyle = s.color;
+      ctx.fillText(s.text, 0, 0);
+      ctx.restore();
+    }
+  }
+
+  function drawBinary() {
+    for (let i = 0; i < bins.length; i++) {
+      const b = bins[i];
+      const parX = mouse.x * (1 - 0.5) * 8;
+      ctx.save();
+      ctx.globalAlpha = b.alpha;
+      ctx.fillStyle = b.hue;
+      ctx.font = `${b.size}px "Consolas", "Menlo", monospace`;
+      ctx.textBaseline = 'top';
+      for (let k = 0; k < b.chars.length; k++) {
+        const yy = b.y + k * b.size * 1.15;
+        const mod = (yy + H) % (H + 200);
+        const px = b.x + parX;
+        ctx.fillText(b.chars[k], px, mod - 100);
+      }
+      ctx.restore();
+      b.y += b.speed;
+      if (b.y > H + 200) {
+        b.y = -bins[i].chars.length * b.size * 1.15 - 50;
+        b.x = Math.random() * W;
+      }
+      if (Math.random() < 0.008) {
+        const idx = Math.floor(Math.random() * b.chars.length);
+        b.chars[idx] = BIN_CHARS[Math.random() < 0.5 ? 0 : 1];
+      }
+    }
+  }
+
+  function drawMouseGlow() {
+    if (!mouse.inWin) return;
+    const gx = mouse.px, gy = mouse.py;
+    const r = 200;
+    const g = ctx.createRadialGradient(gx, gy, 0, gx, gy, r);
+    g.addColorStop(0, 'rgba(0, 229, 255, 0.18)');
+    g.addColorStop(0.5, 'rgba(168, 85, 247, 0.06)');
+    g.addColorStop(1, 'rgba(0, 229, 255, 0)');
+    ctx.fillStyle = g;
+    ctx.fillRect(gx - r, gy - r, r * 2, r * 2);
+
+    ctx.save();
+    for (let i = 0; i < particles.length; i++) {
+      const p = particles[i];
+      p.angle += 0.025 + i * 0.008;
+      const rr = 42 + i * 14;
+      const px = gx + Math.cos(p.angle) * rr;
+      const py = gy + Math.sin(p.angle) * rr * 0.6;
+      const rg = ctx.createRadialGradient(px, py, 0, px, py, 8);
+      rg.addColorStop(0, i % 2 === 0 ? 'rgba(0,229,255,0.95)' : 'rgba(168,85,247,0.95)');
+      rg.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.fillStyle = rg;
+      ctx.beginPath();
+      ctx.arc(px, py, 8, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.restore();
+  }
+
+  function loop() {
+    if (!running) return;
+    t++;
+    mouse.x += (mouse.tx - mouse.x) * 0.05;
+    mouse.y += (mouse.ty - mouse.y) * 0.05;
+    ctx.clearRect(0, 0, W, H);
+    const bg = ctx.createLinearGradient(0, 0, 0, H);
+    bg.addColorStop(0, '#030712');
+    bg.addColorStop(0.55, '#0a1022');
+    bg.addColorStop(1, '#030712');
+    ctx.fillStyle = bg;
+    ctx.fillRect(0, 0, W, H);
+    drawGrid();
+    drawBinary();
+    drawSymbols();
+    drawMouseGlow();
+    frameId = requestAnimationFrame(loop);
+  }
+
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (!reduced) { running = true; loop(); }
+  else {
+    ctx.clearRect(0, 0, W, H);
+    const bg = ctx.createLinearGradient(0, 0, 0, H);
+    bg.addColorStop(0, '#030712');
+    bg.addColorStop(1, '#0a1022');
+    ctx.fillStyle = bg;
+    ctx.fillRect(0, 0, W, H);
+  }
+}
+
+/* ========== 成果覆盖页 ========== */
+const worksOverlay = document.getElementById('worksOverlay');
+const worksOverlayClose = document.getElementById('worksOverlayClose');
+const worksOverlaySubtitle = document.getElementById('worksOverlaySubtitle');
+
+const worksSubtitles = {
+  'AI1.png': 'DYNAMIC VISUAL WEBSITE',
+  'AI2.png': 'AUTOMATED WORKFLOW',
+  'AI3.png': 'PERSONAL AI EMPLOYEE',
+  'AI4.png': 'AI PRESENTATION'
+};
+
+function openOverlay(image) {
+  if (!worksOverlay) return;
+  const sub = worksSubtitles[image] || 'AI +';
+  if (worksOverlaySubtitle) worksOverlaySubtitle.textContent = sub;
+  worksOverlay.classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+function closeOverlay() {
+  if (!worksOverlay) return;
+  worksOverlay.classList.remove('active');
+  document.body.style.overflow = '';
+  document.querySelectorAll('.work-row.active').forEach((r) => r.classList.remove('active'));
+}
+
+document.querySelectorAll('.work-row').forEach((row) => {
+  row.addEventListener('click', () => {
+    const img = row.dataset.image;
+    if (!isDesktop) {
+      // 手机端：首次点击在卡片中央弹出图片，再次点击打开覆盖页
+      if (!row.classList.contains('active')) {
+        document.querySelectorAll('.work-row.active').forEach((r) => { if (r !== row) r.classList.remove('active'); });
+        row.classList.add('active');
+        return;
+      }
+      row.classList.remove('active');
+    }
+    openOverlay(img);
+  });
+});
+// 手机端：点击行外区域收起弹出图片
+if (!isDesktop) {
+  document.addEventListener('touchstart', (e) => {
+    if (!e.target.closest('.work-row')) {
+      document.querySelectorAll('.work-row.active').forEach((r) => r.classList.remove('active'));
+    }
+  }, { passive: true });
+}
+if (worksOverlayClose) worksOverlayClose.addEventListener('click', closeOverlay);
+if (worksOverlay) {
+  worksOverlay.addEventListener('click', (e) => { if (e.target === worksOverlay) closeOverlay(); });
+}
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && worksOverlay && worksOverlay.classList.contains('active')) closeOverlay();
+});
+
+/* ========== 初始化 ========== */
+setupGeoBg();
+setupLazyImages();
+setupReveal();
+setupCopy();
+setupCertSphere();
+initIcons();
+/* 克隆后再次初始化图标（证书轨道克隆副本可能不含 svg，无需处理，img 无图标） */
+
+/* ========== 专业认证：图集覆盖页（ImageTrail 鼠标轨迹，移植自参考 Variant1） ========== */
+function setupCertTrail() {
+  var overlay = document.getElementById('certTrailOverlay');
+  var content = document.getElementById('certTrailContent');
+  var closeBtn = document.getElementById('certTrailClose');
+  if (!overlay || !content) return;
+
+  // 收集 10 张认证图片（去重，保持顺序）
+  var seen = Object.create(null), urls = [];
+  document.querySelectorAll('.cert-sphere-item img').forEach(function (img) {
+    var s = img.getAttribute('data-src');
+    if (s && !seen[s]) { seen[s] = 1; urls.push(s); }
+  });
+  if (!urls.length) return;
+
+  // 构建图片池（content__img > content__img-inner，与参考结构一致）
+  var pool = [];
+  urls.forEach(function (u) {
+    var el = document.createElement('div');
+    el.className = 'content__img';
+    var inner = document.createElement('div');
+    inner.className = 'content__img-inner';
+    inner.style.backgroundImage = "url('" + u + "')";
+    el.appendChild(inner);
+    content.appendChild(el);
+    pool.push({ el: el, t1: null, t2: null });
+  });
+
+  // 摄影机入口：标题行空白处的复古摄影机按钮（不在图片上）
+  var camBtn = document.getElementById('certTrailBtn');
+  if (camBtn) camBtn.addEventListener('click', function (e) { e.stopPropagation(); open(); });
+
+  // ImageTrail 状态（参考 Variant1：阈值 80px，lerp 0.1，0.4s 移动 + 0.4s 淡出缩小）
+  var mousePos = { x: 0, y: 0 }, lastMousePos = { x: 0, y: 0 }, cacheMousePos = { x: 0, y: 0 };
+  var imgPosition = 0, zIndexVal = 1, threshold = 80, rafId = null, started = false;
+
+  function lerp(a, b, n) { return (1 - n) * a + n * b; }
+  function dist(a, b) { return Math.hypot(a.x - b.x, a.y - b.y); }
+
+  function showNext() {
+    zIndexVal++;
+    imgPosition = imgPosition < pool.length - 1 ? imgPosition + 1 : 0;
+    var img = pool[imgPosition];
+    var w = img.el.offsetWidth || 180, h = img.el.offsetHeight || 130;
+    clearTimeout(img.t1); clearTimeout(img.t2);
+    // 起点：cacheMousePos，opacity1 scale1
+    img.el.style.transition = 'none';
+    img.el.style.zIndex = String(zIndexVal);
+    img.el.style.opacity = '1';
+    img.el.style.transform = 'translate(' + (cacheMousePos.x - w / 2) + 'px,' + (cacheMousePos.y - h / 2) + 'px) scale(1)';
+    // 强制回流后：移动到 mousePos（0.4s）
+    void img.el.offsetWidth;
+    img.el.style.transition = 'transform 0.4s cubic-bezier(0.4,0,0.2,1)';
+    img.el.style.transform = 'translate(' + (mousePos.x - w / 2) + 'px,' + (mousePos.y - h / 2) + 'px) scale(1)';
+    // 0.4s 后淡出 + 缩小（0.4s）
+    img.t1 = setTimeout(function () {
+      img.el.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+      img.el.style.opacity = '0';
+      img.el.style.transform = 'translate(' + (mousePos.x - w / 2) + 'px,' + (mousePos.y - h / 2) + 'px) scale(0.2)';
+    }, 400);
+  }
+
+  function render() {
+    cacheMousePos.x = lerp(cacheMousePos.x, mousePos.x, 0.1);
+    cacheMousePos.y = lerp(cacheMousePos.y, mousePos.y, 0.1);
+    if (dist(mousePos, lastMousePos) > threshold) {
+      showNext();
+      lastMousePos = { x: mousePos.x, y: mousePos.y };
+    }
+    rafId = requestAnimationFrame(render);
+  }
+
+  function onMove(e) {
+    var r = content.getBoundingClientRect();
+    var cx = (e.touches && e.touches.length ? e.touches[0].clientX : e.clientX);
+    var cy = (e.touches && e.touches.length ? e.touches[0].clientY : e.clientY);
+    mousePos.x = cx - r.left;
+    mousePos.y = cy - r.top;
+    if (!started) {
+      started = true;
+      cacheMousePos = { x: mousePos.x, y: mousePos.y };
+      lastMousePos = { x: mousePos.x, y: mousePos.y };
+      rafId = requestAnimationFrame(render);
+    }
+  }
+  content.addEventListener('mousemove', onMove);
+  content.addEventListener('touchmove', onMove, { passive: true });
+
+  function open() {
+    overlay.classList.add('active');
+    document.body.style.overflow = 'hidden';
+    started = false;
+  }
+  function close() {
+    overlay.classList.remove('active');
+    document.body.style.overflow = '';
+    if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
+    started = false;
+    pool.forEach(function (img) { clearTimeout(img.t1); clearTimeout(img.t2); img.el.style.opacity = '0'; });
+  }
+  closeBtn.addEventListener('click', function (e) { e.stopPropagation(); close(); });
+  overlay.addEventListener('click', function (e) { if (e.target.closest('.cert-trail-close')) return; close(); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && overlay.classList.contains('active')) close(); });
+}
+setupCertTrail();
+</script>
+
+</body>
+</html>
