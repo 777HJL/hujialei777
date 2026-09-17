@@ -65,8 +65,22 @@
   /* ===== 淡入动画 ===== */
   .reveal { opacity: 0; transform: translateY(28px); transition: opacity 800ms cubic-bezier(0.16,1,0.3,1), transform 800ms cubic-bezier(0.16,1,0.3,1); }
   .reveal.in { opacity: 1; transform: translateY(0); }
-  .lazy-img { opacity: 0; transition: opacity 600ms ease; }
-  .lazy-img.loaded { opacity: 1; }
+  .lazy-img {
+    opacity: 0;
+    transition: opacity 600ms ease;
+    background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+  }
+  .lazy-img.loaded { opacity: 1; background: transparent; }
+  @keyframes lazy-shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+  }
+  .lazy-img:not(.loaded) {
+    background: linear-gradient(90deg, #1e293b 25%, #243149 50%, #1e293b 75%);
+    background-size: 200% 100%;
+    animation: lazy-shimmer 1.6s infinite linear;
+  }
+  .lazy-img.loaded { animation: none; }
 
   /* ===== 亮点战绩渐变数字 ===== */
   .gradient-num {
@@ -361,10 +375,6 @@
         <i data-lucide="award" class="w-3.5 h-3.5"></i><span class="hidden sm:inline">认证</span>
         <span class="absolute -bottom-1 left-0 w-0 h-px bg-cyan-400 transition-all group-hover:w-full"></span>
       </a>
-      <a href="#thanks" class="flex items-center gap-1 hover:text-white transition-colors relative group">
-        <i data-lucide="heart" class="w-3.5 h-3.5"></i><span class="hidden sm:inline">鸣谢</span>
-        <span class="absolute -bottom-1 left-0 w-0 h-px bg-cyan-400 transition-all group-hover:w-full"></span>
-      </a>
     </div>
   </div>
 </nav>
@@ -379,7 +389,7 @@
             胡嘉磊<span class="inline-block w-3.5 h-3.5 md:w-5 md:h-5 rounded-full bg-orange-400 mb-1 md:mb-2 ml-1.5 flex-shrink-0"></span>
           </h1>
           <div class="hero-avatar w-20 h-20 md:w-28 md:h-28 rounded-full flex-shrink-0 border-[3px] border-white/15 overflow-hidden shadow-[0_6px_24px_-4px_rgba(0,229,255,0.2)]">
-            <img class="lazy-img w-full h-full object-cover" data-src="头像.jpg" alt="头像" onerror="this.onerror=null;this.removeAttribute('src');this.parentElement.style.background='rgba(22,28,42,0.78)';">
+            <img class="lazy-img w-full h-full object-cover" data-src="头像.jpg" alt="头像" decoding="async">
           </div>
         </div>
         <p class="text-2xl md:text-3xl font-bold text-slate-400 mb-7 md:mb-9 leading-tight tracking-tight">保持谦虚。保持思考</p>
@@ -473,7 +483,7 @@
             <div class="work-title-en text-xl md:text-2xl font-extrabold text-white tracking-wide uppercase mb-2 transition-all">Dynamic Visual Website</div>
             <div class="work-title-zh text-sm md:text-base text-slate-400 leading-relaxed transition-all">Gemini + 零前端代码基础 = 动态视觉网站</div>
           </div>
-          <div class="work-row-image w-[220px]"><img src="AI1.png" alt="AI 1" onerror="this.style.background='rgba(22,28,42,0.78)';this.style.minHeight='100px';"></div>
+          <div class="work-row-image w-[220px]"><img src="AI1.png" alt="AI 1" loading="lazy" decoding="async" onerror="this.style.background='linear-gradient(135deg,#1e293b 0%,#0f172a 100%)';this.style.minHeight='100px';"></div>
         </div>
         <div class="work-row relative flex items-center gap-5 md:gap-8 py-7 md:py-10 border-b border-white/10 cursor-pointer overflow-hidden" data-image="AI2.png">
           <div class="work-num-outline text-5xl md:text-7xl font-extrabold leading-none min-w-[64px] md:min-w-[100px] tracking-tighter">02</div>
@@ -481,7 +491,7 @@
             <div class="work-title-en text-xl md:text-2xl font-extrabold text-white tracking-wide uppercase mb-2 transition-all">Automated Workflow</div>
             <div class="work-title-zh text-sm md:text-base text-slate-400 leading-relaxed transition-all">自动工作流——每日自动化抓取信息</div>
           </div>
-          <div class="work-row-image w-[220px]"><img src="AI2.png" alt="AI 2" onerror="this.style.background='rgba(22,28,42,0.78)';this.style.minHeight='100px';"></div>
+          <div class="work-row-image w-[220px]"><img src="AI2.png" alt="AI 2" loading="lazy" decoding="async" onerror="this.style.background='linear-gradient(135deg,#1e293b 0%,#0f172a 100%)';this.style.minHeight='100px';"></div>
         </div>
         <div class="work-row relative flex items-center gap-5 md:gap-8 py-7 md:py-10 border-b border-white/10 cursor-pointer overflow-hidden" data-image="AI3.png">
           <div class="work-num-outline text-5xl md:text-7xl font-extrabold leading-none min-w-[64px] md:min-w-[100px] tracking-tighter">03</div>
@@ -489,7 +499,7 @@
             <div class="work-title-en text-xl md:text-2xl font-extrabold text-white tracking-wide uppercase mb-2 transition-all">Personal AI Employee</div>
             <div class="work-title-zh text-sm md:text-base text-slate-400 leading-relaxed transition-all">系统提示词学习 + 固定提示词 = 私人AI雇员</div>
           </div>
-          <div class="work-row-image w-[220px]"><img src="AI3.png" alt="AI 3" onerror="this.style.background='rgba(22,28,42,0.78)';this.style.minHeight='100px';"></div>
+          <div class="work-row-image w-[220px]"><img src="AI3.png" alt="AI 3" loading="lazy" decoding="async" onerror="this.style.background='linear-gradient(135deg,#1e293b 0%,#0f172a 100%)';this.style.minHeight='100px';"></div>
         </div>
         <div class="work-row relative flex items-center gap-5 md:gap-8 py-7 md:py-10 border-b border-white/10 cursor-pointer overflow-hidden" data-image="AI4.png">
           <div class="work-num-outline text-5xl md:text-7xl font-extrabold leading-none min-w-[64px] md:min-w-[100px] tracking-tighter">04</div>
@@ -497,7 +507,7 @@
             <div class="work-title-en text-xl md:text-2xl font-extrabold text-white tracking-wide uppercase mb-2 transition-all">AI Presentation</div>
             <div class="work-title-zh text-sm md:text-base text-slate-400 leading-relaxed transition-all">主题大纲 + 智能排版 = 一键生成精美PPT</div>
           </div>
-          <div class="work-row-image w-[220px]"><img src="AI4.png" alt="AI 4" onerror="this.style.background='rgba(22,28,42,0.78)';this.style.minHeight='100px';"></div>
+          <div class="work-row-image w-[220px]"><img src="AI4.png" alt="AI 4" loading="lazy" decoding="async" onerror="this.style.background='linear-gradient(135deg,#1e293b 0%,#0f172a 100%)';this.style.minHeight='100px';"></div>
         </div>
       </div>
     </div>
@@ -599,23 +609,23 @@
         <div class="cert-marquee-row mb-4" data-direction="left">
           <div class="cert-marquee-track gap-4">
             <div class="cert-sphere-item flex-[0_0_auto] w-[200px] h-[120px] md:w-[300px] md:h-[180px] rounded-2xl overflow-hidden bg-slate-900 border border-white/10 relative transition-all hover:-translate-y-1 hover:border-cyan-400/50 hover:shadow-[0_16px_40px_-8px_rgba(99,102,241,0.25)]">
-              <img class="lazy-img w-full h-full object-cover" data-src="certificate.jpg" alt="综合证书" onerror="this.onerror=null;this.style.background='rgba(22,28,42,0.78)';">
+              <img class="lazy-img w-full h-full object-cover" data-src="certificate.jpg" alt="综合证书" decoding="async">
               <span class="absolute left-0 right-0 bottom-0 px-3 py-2 pt-8 bg-gradient-to-t from-black/85 to-transparent text-white text-[10px] md:text-xs font-semibold tracking-wide">综合证书</span>
             </div>
             <div class="cert-sphere-item flex-[0_0_auto] w-[200px] h-[120px] md:w-[300px] md:h-[180px] rounded-2xl overflow-hidden bg-slate-900 border border-white/10 relative transition-all hover:-translate-y-1 hover:border-cyan-400/50 hover:shadow-[0_16px_40px_-8px_rgba(99,102,241,0.25)]">
-              <img class="lazy-img w-full h-full object-cover" data-src="PAI AICG 设计.jpg" alt="PAI AICG 设计" onerror="this.onerror=null;this.style.background='rgba(22,28,42,0.78)';">
+              <img class="lazy-img w-full h-full object-cover" data-src="PAI AICG 设计.jpg" alt="PAI AICG 设计" decoding="async">
               <span class="absolute left-0 right-0 bottom-0 px-3 py-2 pt-8 bg-gradient-to-t from-black/85 to-transparent text-white text-[10px] md:text-xs font-semibold tracking-wide">PAI AICG 设计</span>
             </div>
             <div class="cert-sphere-item flex-[0_0_auto] w-[200px] h-[120px] md:w-[300px] md:h-[180px] rounded-2xl overflow-hidden bg-slate-900 border border-white/10 relative transition-all hover:-translate-y-1 hover:border-cyan-400/50 hover:shadow-[0_16px_40px_-8px_rgba(99,102,241,0.25)]">
-              <img class="lazy-img w-full h-full object-cover" data-src="rag应用.jpg" alt="RAG 应用" onerror="this.onerror=null;this.style.background='rgba(22,28,42,0.78)';">
+              <img class="lazy-img w-full h-full object-cover" data-src="rag应用.jpg" alt="RAG 应用" decoding="async">
               <span class="absolute left-0 right-0 bottom-0 px-3 py-2 pt-8 bg-gradient-to-t from-black/85 to-transparent text-white text-[10px] md:text-xs font-semibold tracking-wide">RAG 应用</span>
             </div>
             <div class="cert-sphere-item flex-[0_0_auto] w-[200px] h-[120px] md:w-[300px] md:h-[180px] rounded-2xl overflow-hidden bg-slate-900 border border-white/10 relative transition-all hover:-translate-y-1 hover:border-cyan-400/50 hover:shadow-[0_16px_40px_-8px_rgba(99,102,241,0.25)]">
-              <img class="lazy-img w-full h-full object-cover" data-src="springAI 应用.jpg" alt="SpringAI 应用" onerror="this.onerror=null;this.style.background='rgba(22,28,42,0.78)';">
+              <img class="lazy-img w-full h-full object-cover" data-src="springAI 应用.jpg" alt="SpringAI 应用" decoding="async">
               <span class="absolute left-0 right-0 bottom-0 px-3 py-2 pt-8 bg-gradient-to-t from-black/85 to-transparent text-white text-[10px] md:text-xs font-semibold tracking-wide">SpringAI 应用</span>
             </div>
             <div class="cert-sphere-item flex-[0_0_auto] w-[200px] h-[120px] md:w-[300px] md:h-[180px] rounded-2xl overflow-hidden bg-slate-900 border border-white/10 relative transition-all hover:-translate-y-1 hover:border-cyan-400/50 hover:shadow-[0_16px_40px_-8px_rgba(99,102,241,0.25)]">
-              <img class="lazy-img w-full h-full object-cover" data-src="人工智能训练师（初级）-胡嘉磊-20260815.jpg" alt="人工智能训练师（初级）" onerror="this.onerror=null;this.style.background='rgba(22,28,42,0.78)';">
+              <img class="lazy-img w-full h-full object-cover" data-src="人工智能训练师（初级）-胡嘉磊-20260815.jpg" alt="人工智能训练师（初级）" decoding="async">
               <span class="absolute left-0 right-0 bottom-0 px-3 py-2 pt-8 bg-gradient-to-t from-black/85 to-transparent text-white text-[10px] md:text-xs font-semibold tracking-wide">训练师（初级）</span>
             </div>
           </div>
@@ -624,23 +634,23 @@
         <div class="cert-marquee-row reverse" data-direction="right">
           <div class="cert-marquee-track gap-4">
             <div class="cert-sphere-item flex-[0_0_auto] w-[200px] h-[120px] md:w-[300px] md:h-[180px] rounded-2xl overflow-hidden bg-slate-900 border border-white/10 relative transition-all hover:-translate-y-1 hover:border-cyan-400/50 hover:shadow-[0_16px_40px_-8px_rgba(99,102,241,0.25)]">
-              <img class="lazy-img w-full h-full object-cover" data-src="VISION设计进阶.jpg" alt="VISION 设计进阶" onerror="this.onerror=null;this.style.background='rgba(22,28,42,0.78)';">
+              <img class="lazy-img w-full h-full object-cover" data-src="VISION设计进阶.jpg" alt="VISION 设计进阶" decoding="async">
               <span class="absolute left-0 right-0 bottom-0 px-3 py-2 pt-8 bg-gradient-to-t from-black/85 to-transparent text-white text-[10px] md:text-xs font-semibold tracking-wide">VISION 设计进阶</span>
             </div>
             <div class="cert-sphere-item flex-[0_0_auto] w-[200px] h-[120px] md:w-[300px] md:h-[180px] rounded-2xl overflow-hidden bg-slate-900 border border-white/10 relative transition-all hover:-translate-y-1 hover:border-cyan-400/50 hover:shadow-[0_16px_40px_-8px_rgba(99,102,241,0.25)]">
-              <img class="lazy-img w-full h-full object-cover" data-src="VISION设计入门.jpg" alt="VISION 设计入门" onerror="this.onerror=null;this.style.background='rgba(22,28,42,0.78)';">
+              <img class="lazy-img w-full h-full object-cover" data-src="VISION设计入门.jpg" alt="VISION 设计入门" decoding="async">
               <span class="absolute left-0 right-0 bottom-0 px-3 py-2 pt-8 bg-gradient-to-t from-black/85 to-transparent text-white text-[10px] md:text-xs font-semibold tracking-wide">VISION 设计入门</span>
             </div>
             <div class="cert-sphere-item flex-[0_0_auto] w-[200px] h-[120px] md:w-[300px] md:h-[180px] rounded-2xl overflow-hidden bg-slate-900 border border-white/10 relative transition-all hover:-translate-y-1 hover:border-cyan-400/50 hover:shadow-[0_16px_40px_-8px_rgba(99,102,241,0.25)]">
-              <img class="lazy-img w-full h-full object-cover" data-src="百炼构建.jpg" alt="百炼构建" onerror="this.onerror=null;this.style.background='rgba(22,28,42,0.78)';">
+              <img class="lazy-img w-full h-full object-cover" data-src="百炼构建.jpg" alt="百炼构建" decoding="async">
               <span class="absolute left-0 right-0 bottom-0 px-3 py-2 pt-8 bg-gradient-to-t from-black/85 to-transparent text-white text-[10px] md:text-xs font-semibold tracking-wide">百炼构建</span>
             </div>
             <div class="cert-sphere-item flex-[0_0_auto] w-[200px] h-[120px] md:w-[300px] md:h-[180px] rounded-2xl overflow-hidden bg-slate-900 border border-white/10 relative transition-all hover:-translate-y-1 hover:border-cyan-400/50 hover:shadow-[0_16px_40px_-8px_rgba(99,102,241,0.25)]">
-              <img class="lazy-img w-full h-full object-cover" data-src="大模型生产.jpg" alt="大模型生产" onerror="this.onerror=null;this.style.background='rgba(22,28,42,0.78)';">
+              <img class="lazy-img w-full h-full object-cover" data-src="大模型生产.jpg" alt="大模型生产" decoding="async">
               <span class="absolute left-0 right-0 bottom-0 px-3 py-2 pt-8 bg-gradient-to-t from-black/85 to-transparent text-white text-[10px] md:text-xs font-semibold tracking-wide">大模型生产</span>
             </div>
             <div class="cert-sphere-item flex-[0_0_auto] w-[200px] h-[120px] md:w-[300px] md:h-[180px] rounded-2xl overflow-hidden bg-slate-900 border border-white/10 relative transition-all hover:-translate-y-1 hover:border-cyan-400/50 hover:shadow-[0_16px_40px_-8px_rgba(99,102,241,0.25)]">
-              <img class="lazy-img w-full h-full object-cover" data-src="人工智能训练师（高级）-胡嘉磊-20260817.jpg" alt="人工智能训练师（高级）" onerror="this.onerror=null;this.style.background='rgba(22,28,42,0.78)';">
+              <img class="lazy-img w-full h-full object-cover" data-src="人工智能训练师（高级）-胡嘉磊-20260817.jpg" alt="人工智能训练师（高级）" decoding="async">
               <span class="absolute left-0 right-0 bottom-0 px-3 py-2 pt-8 bg-gradient-to-t from-black/85 to-transparent text-white text-[10px] md:text-xs font-semibold tracking-wide">训练师（高级）</span>
             </div>
           </div>
@@ -652,30 +662,6 @@
     </div>
   </section>
 
-  <!-- 7. 特别鸣谢 -->
-  <section id="thanks" class="py-16 md:py-24 pb-28 md:pb-36 px-5 md:px-8 relative">
-    <div class="max-w-3xl mx-auto w-full">
-      <div class="reveal mb-7 md:mb-8">
-        <div class="flex items-center gap-2 text-xs font-bold tracking-[0.12em] text-orange-400 mb-5">
-          <span class="inline-block w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-b-[9px] border-b-orange-400"></span>
-          <span>SPECIAL_THANKS</span>
-          <span class="text-slate-500 font-medium">//</span>
-          <span class="text-slate-300 font-medium">鸣谢</span>
-        </div>
-        <h2 class="flex items-end text-3xl md:text-5xl font-extrabold text-white tracking-tight">
-          特别鸣谢<span class="text-slate-500 font-normal mx-1.5">——</span>浪尖儿社区<span class="inline-block w-4 h-4 md:w-5 md:h-5 rounded-full bg-orange-400 mb-1.5 md:mb-3 ml-1.5 flex-shrink-0"></span>
-        </h2>
-      </div>
-      <div class="reveal">
-        <p class="text-sm md:text-lg text-slate-400 leading-relaxed mb-8 md:mb-10">
-          感谢浪尖儿社区的培养，一步一步地带着我学习大学不教的技能。从 AI 应用、找实习、PPT 设计、视频剪辑、自媒体运营等硬技能，到大学规则的去魅、情商培养，甚至是资本趋势等信息。
-        </p>
-        <div class="thanks-image-card rounded-2xl overflow-hidden bg-slate-900 border border-white/10 transition-all hover:-translate-y-1 hover:shadow-[0_20px_50px_-10px_rgba(168,85,247,0.25)]">
-          <img class="lazy-img w-full h-auto" data-src="浪尖儿.jpg" alt="浪尖儿社区" onerror="this.onerror=null;this.removeAttribute('src');this.parentElement.style.display='none';">
-        </div>
-      </div>
-    </div>
-  </section>
 </main>
 
 <footer class="py-8 text-center border-t border-white/10 text-xs text-slate-500">
@@ -744,7 +730,7 @@ if (isDesktop && dot && ring) {
   }
   animate();
 
-  const hoverables = 'a, button, .contact-card, .work-row, .edu-card, .hero-avatar, .thanks-image-card, .cert-sphere-item, .skill-tag';
+  const hoverables = 'a, button, .contact-card, .work-row, .edu-card, .hero-avatar, .cert-sphere-item, .skill-tag';
   document.addEventListener('mouseover', (e) => {
     if (e.target.closest(hoverables)) { dot.classList.add('hovering'); ring.classList.add('hovering'); }
   });
@@ -803,15 +789,20 @@ function setupLazyImages() {
     entries.forEach((entry) => {
       if (entry.isIntersecting) {
         const img = entry.target;
-        img.src = img.dataset.src;
-        img.addEventListener('load', () => img.classList.add('loaded'));
+        const raw = img.dataset.src || '';
+        // 中文文件名做一次 URI 编码，避免部分服务器 404 黑屏
+        try { img.src = encodeURI(raw); } catch (e) { img.src = raw; }
+        img.decoding = 'async';
+        img.addEventListener('load', () => img.classList.add('loaded'), { once: true });
         img.addEventListener('error', () => {
-          img.parentElement.style.background = 'rgba(22,28,42,0.78)';
-        });
+          // 失败也加 loaded，避免永远 opacity:0 叠加暗色父级造成黑块
+          img.classList.add('loaded');
+          img.style.background = 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)';
+        }, { once: true });
         obs.unobserve(img);
       }
     });
-  }, { rootMargin: '50px' });
+  }, { rootMargin: '300px 0px', threshold: 0.01 });
   imgs.forEach((img) => {
     if (img.closest('.cert-marquee-track')) return;
     obs.observe(img);
@@ -936,9 +927,14 @@ function setupCertSphere() {
     track.innerHTML = originalHTML + originalHTML;
 
     track.querySelectorAll('img[data-src]').forEach((img) => {
-      img.src = img.dataset.src;
+      const raw = img.dataset.src || '';
+      try { img.src = encodeURI(raw); } catch (e) { img.src = raw; }
+      img.decoding = 'async';
       img.addEventListener('load', () => img.classList.add('loaded'), { once: true });
-      img.addEventListener('error', () => { img.style.background = 'rgba(22,28,42,0.78)'; img.classList.add('loaded'); }, { once: true });
+      img.addEventListener('error', () => {
+        img.classList.add('loaded');
+        img.style.background = 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)';
+      }, { once: true });
     });
 
     halfWidth = track.scrollWidth / 2;
